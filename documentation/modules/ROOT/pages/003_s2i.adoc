@@ -1,0 +1,187 @@
+= Source Code Deployment
+:!sectids:
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+image::003-image001.png[Creating an Application From Source Code]
+
+== *Understanding 'Source-2-Image'*
+
+====
+*What will you learn?*
+
+This Module will introduce you to the concept of building Applications directly from Source Code rather than a pre-built Image
+
+This will highlight the functionality within OpenShift that guides you through the process 
+
+After completing the Module you will be able to build an Application from Source and understand what OpenShift is doing
+====
+
+=== *Pre-Requisites*
+
+In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+
+[.console-input]
+[source,bash]
+----
+apps.ocp1.azure.dso.digital.mod.uk
+----
+
+[WARNING]
+====
+*Please Read* - if you are using a *shared* project you may encounter issues with naming; this is because Objects within a *Project* must be _uniquely_ named. If someone
+else is doing this course in the same Project they may have created objects with the names stated. +
+
+*If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating*
+====
+
+=== *An Introduction to Source-2-Image*
+
+All Applications, and even OpenShift itself, run as Pods on what are known as *'Worker Nodes'*. For a Container to be instantiated it needs to have a base Image; when a Pod is created in OpenShift the file system that makes
+up an Image, which is actually a set of file-differences applied in order, is written to the target Worker Node and executed there. These Images are sourced from an internal Integrated Registry which, in the first Module, we populated
+using an Image from the outside world that had been pre-created.
+
+This is not always an available option and in fact OpenShift was explicitly designed with an extensible concept called *Source-2-Image* which will automatically construct an Image for instantiation as a Pod from two components; a base
+framework Image containing the runtime and compilation tools for a target language, and a source repository containing just source (and normally nothing OpenShift or Kubernetes).
+
+In essence this approach is elegantly simple; OpenShift provides the concept of a *BuildConfig* object which tells OpenShift how to build the end composite Image, what base framework to use, what source repository to use and what Objects to place the completed elements in, very similar
+to the Objects created by the approach shown in Module 002. 
+
+[NOTE]
+====
+Think of OpenShift as being two sides of a coin; one side is all about orchestrating immutable Images as Applications, the other is building those Images. +
+
+Source-2-Image actually works by running a build container behind the scenes that executes a build based on the framework (i.e. if the framework is JAVA it performs a Maven build) using the source provided and then
+writes a composite Image containing the build output into the Registry. At that point the other side of the coin takes over and OpenShift deploys the Application
+====
+
+As you will see in this Module the S2I approach does everything for you, including the creation of the Application objects, such as the Service, Route, Pods and DeploymentConfig, as with the 
+creation of an Application from an existing Image as shown in Module 002.
+
+[TIP]
+====
+The example provided is a JAVA Quarkus application built for a student bootcamp. OpenShift provides a number of S2I Builder Images out-of-the-box; if you want to try another framework 
+select a different Builder Image when prompted to use the OpenJDK one and use the 'Try Sample' link shown beneath the Git Repo URL textbox rather than the one provided in the instructions.
+====
+
+=== *Creating the Application*
+
+On the D2S OpenShift UI switch to the Developer viewpoint (if you are not logged on please complete the pre-requisites listed at the top of this Module).
+
+Click Add+
+
+On the Add tab click on *All services*. This will display the entire Developer Catalog. On the left hand side of the panel select *Builder Images*.
+
+[NOTE]
+====
+The D2S system currently has 11 builder images installed. The S2I is actually an extensible concept and allows for additional Builder Images to be added over time if new technology comes along.
+====
+
+Either scroll down and find the *Red Hat OpenJDK* Builder Image, or filter using *openjdk*.
+
+[NOTE]
+====
+You will find two Builder Images relating to OpenJDK. One is based around the JBoss EAP and the other is for building pure JAVA using Maven and OpenJDK.
+====
+
+Click on the Red Hat OpenJDK Builder Image (if you want to try another framework, choose one instead).
+
+image::003-image002.png[S2I Dialog,width=400px]
+
+[TIP]
+====
+Note that in the case of creating from Source you get a BuildConfig in addition to the Objects you get when creating from an Image. This BuildConfig tells OpenShift
+exactly how to build the Image, and the ImageStream is an Object that contains metadata as to where that created Image is placed. 
+====
+
+Click on 'Create Application' to start the process.
+
+First note that there is a pulldown at the top of the form titled *Builder Image Version*. OpenShift S2I allows for the selection of which specific framework Image relating to a technology to use; in the case of the 
+OpenJDK Red Hat ships OpenJDK 17, 11 and 8 as options (the last part of the Image name refers to the underlying OS used in the framework Container - for instance
+*-ubi8* indicates that the composite Image will be underpinned using the lightweight 'Universal Base Image' for RHEL8).
+
+image::003-image003.png[Framework Dialog,width=400px]
+
+Copy the following text into the *'Git Repo URL'* field (if you are using a different Builder Image click on the 'Try Sample' below the field to fill it with that instead).
+
+[.console-input]
+[source,bash]
+----
+https://github.com/utherp0/bootcampapp
+----
+
+Once you have entered this data, or in the case of another Builder Image, the interface should indicate the URL is Validated.
+
+Scroll down to the *General* components. Change the *Application* field (pull down and select 'Create Application') and enter 'quarkus-app' as the name (or if you are using another Builder Image, choose something
+like myexample-app).
+
+The *Name* field will have been pre-populated with the name of the Git repo used. In the case of the OpenJDK one change the name to 'quarkus'.
+
+In the *Resources* section set the resource type to *DeploymentConfig*.
+
+Make sure the *Create a route to the Application* box is ticked.
+
+Now hit Create to start the build.
+
+An empty Roundel will appear with the appropriate logo in it; click this and look at the right panel of information. 
+
+Click on the View Logs and watch the build happen.
+
+[NOTE]
+====
+When watching the log you will see the Source-2-Image doing its magic. It will download the layers of the framework image, clone the original source repo, perform the build
+(in the case of the OpenJDK it will run the Maven build), then write the composite file layers for the final image to the registry.
+====
+
+Once the build completes the Deployment takes over; this takes the Image generated and stored in the Integrated Registry and instantiates an Application with it.
+
+We now have an Application running built from source code. With the OpenJDK one you can test this by clicking on the *Route* icon at the top right of the Roundel. 
+
+If you add the following code to the end of the URL you will see the endpoint responding with a second counter from call start:
+
+[.console-input]
+[source,bash]
+----
+/endpoints/health
+----
+
+=== *Further Exercises*
+
+These are completely optional but give you a chance to explore the concepts of the Module.
+
+*Using the Builds tab on the Developer viewpoint force a new build and watch the Topology change when the build completes*
+
+[TIP]
+====
+Select the BuildConfig, click on the 'Kebab' (this is the notation for the three vertical dot pulldown menus used within OpenShift) and start build; you can watch the state of the build and the historical state of builds from the Build Config tab
+====
+
+*Remove the entire Application using the Topology tab and the Application Grouping Icon*
+
+[TIP]
+====
+If you click on the 'Application' label of the roundel you can apply actions to the Application Grouping; use this to delete the Application and watch the topology. Note that the
+system requires you to enter the name of the Application Grouping to confirm deletion
+====
+
+=== Cleaning up
+
+[TIP]
+====
+When you create Applications in OpenShift they will remain resident until you remove them
+====
+
+To finish the Module head to the *Topology page*, click on each of the *Application Groups* (i.e. (A) devex-app) that you have created, if they remain, and in the *Actions* menu on the righthand panel for the Application choose *Delete Application*.
+The system will prompt you to enter the name of the Application Group; enter this name and press return/hit *Delete*.
+
+[TIP]
+====
+Deleting the Application Group removes all of the Objects relating to the application
+====
+
+
+
+

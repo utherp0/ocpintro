@@ -1,0 +1,470 @@
+= Introducing Pipelines for Developers
+:!sectids:
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+image::010-image001.png[Creating a Pipeline using the UI]
+
+== *Introducing Pipelines for Developers*
+
+====
+*What will you learn?*
+
+This Module will explain the basics of the Tekton Pipeline functionality within OpenShift from a developer's perspective
+
+The Module will walk you through creating tasks and pipelines, executing those tasks and pipelines within OpenShift, and how to add persistent storage between tasks.
+
+It will also explain the theory behind Tasks and Pipelines to enable you to understand and exploit the concepts
+
+After completing this Module you will understand the capabilities of Tekton and be able to create Tasks and Pipelines
+====
+
+=== *Pre-Requisites*
+
+In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+
+[.console-input]
+[source,bash]
+----
+apps.ocp1.azure.dso.digital.mod.uk
+----
+
+[WARNING]
+====
+*Please Read* - if you are using a *shared* project you may encounter issues with naming; this is because Objects within a *Project* must be _uniquely_ named. If someone
+else is doing this course in the same Project they may have created objects with the names stated. +
+
+*If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating*
+====
+
+=== *An overview of the basics; Tasks and Pipelines*
+
+Tekton provides a set of atomic components for creating extensive Pipeline functionality involving manipulating Objects within OpenShift.
+
+That's the official Kubernetes definition, but let's take a step back and examine just what this functionality is actually for. 
+
+=== What is a *Pipeline*?
+
+In the old days writing software was a lot more of a chore. You had to write the software, work out how to compile it, link it, prepare it for production,
+ physically move it, set it up, the works. There were many manual steps in getting the software from A to B and those steps always introduced points at which 
+ mistakes could be made.
+
+The concept of a Pipeline is simply a set of automated tasks that are executed in a prescribed order, with any of the tasks, if they fail, stopping the process. This technology was 
+originally implemented in the *Hudson* and *Jenkins* products. In fact, OpenShift used *Jenkins* as its native pipeline technology in the previous release.
+
+The issue with using *Jenkins* is that it was fire-and-forget; the container orchestration platform would start the Pipeline and then be informed at the end
+as to whether or not the Pipeline had completed. Also, in order to interact with the platform, OpenShift had to provide an extended DSL to Jenkins, which made 
+the provisioning of Pipelines a little bit of a black art.
+
+The *Tekton* project extends the Kubernetes object model with components for the creation and execution of Pipelines _within the Cluster itself_. These Pipelines are executed as Containers (more on that in a moment)
+and are controlled within the Cluster.
+
+The *Pipelines* themselves are just a set of *Tasks* that are executed in a defined order. The *Task* is the atomic component of the Pipeline and it can be made up of one or more *steps*. Each *step* is in actuality a Container.
+
+This is *very* powerful. Anything you can put in a Container can form a step of a task; in addition because the Cluster controls the execution of the steps and tasks it can influence and observe the Pipeline at all times.
+
+In fact you can build Pipelines with logic based on the behaviour of the steps themselves; imagine being able to build an automated process for build, test, deploy that can change its own 
+behaviour _in flight_ based on the results, or even the process consumption, of the steps within it.
+
+This observability and fine grain control is what makes *Tekton* such a powerful tool.
+
+[NOTE]
+====
+There are actually four basic primitives within the 'Pipeline' concept provided on *OpenShift* via Tekton. You have definition (cookie-cutter) objects for Task and Pipeline, which define
+the behaviour of a task and the assembling of tasks for a pipeline, and then you have the temporal execution objects, *TaskRun* and *PipelineRun* which are actual runs of the objects; when you
+execute a Pipeline the system creates a PipelineRun which contains the outputs for all the TaskRuns. These act as temporally stamped immutable objects which are used for audit and historical reference
+====
+
+=== Introducing *Tasks*
+
+[TIP]
+====
+For this part of the module we will be interacting with the information panel pertaining to *Tasks*. 
+====
+
+Make sure you are at the *Topology* page of the UI. Choose *Search*, and then in the *Resources* pulldown type *Task*. Tick the search result for *(T) Task* and click on *Add to navigation* on the righthand side of the panel.
+
+[NOTE]
+====
+This will add a shortcut on the lefthand navigation bar for getting to the *Tasks* panel. If the shortcut does not immediately appear, refresh your browser page.
+====
+
+Now click on *Tasks* in the lefthand navigation panel.
+
+image::010-image002.png[Tasks Panel,width=550px]
+
+We are going to create the simplist of tasks; all of the examples we are going to use are simple just to show the mechanics of the Pipelines. In actuality when using Pipelines
+in production and devops the tasks will be entities such as 'Clone a Git Repo', 'Compile the code', 'Perform code analysis'.
+
+[NOTE]
+====
+*OpenShift* Pipelines ships with a set of archetypal tasks that can be easily combined into powerful Pipelines. If you perform a search, as you did to find *Tasks*, but in this case search
+for *ClusterTask* you can examine the ones that are installed in the Cluster. When you build Pipelines you can use these; also note that these tasks normally come with
+a number of parameters you have to provide, such as the Git repo for the *Clone Git* task. +
+
+Using the ClusterTask panel you can examine these. Shown below is an extract of the params component of the Git Clone task. 
+====
+
+image::010-image003.png[Git Clone Task,width=550px]
+
+We are going to create a very simple task that has two steps. Click on *Tasks*. Click on *Create Task* in the top right of the panel.
+
+Delete the contents of the YAML editor and replace it with this:
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask1
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 1"
+----
+
+Hit *Create*. The system will create the task and take you to the *Task* overview page.
+
+[TIP]
+====
+What we have done is create a cookie-cutter for creating a task. The task consists of two steps; the first step uses the latest UBI8 (RHEL8 Universal Base Image), is called *id* and
+simply calls the *cat* command with the parameters */etc/redhat-release*. The second step, called *echo*, calls the command *echo* with the parameter *"In task1"*, again using the
+latest RHEL8 UBI.
+
+In actuality you have as many steps using as many different images as you like. This example is a simple atomic unit that executes two Containers in series with the appropriate commands
+====
+
+Again, as we said, this is a template for executing the task so we haven't executed anything, just provided the rules.
+
+To test the task we will create a simple pipeline using the UI. *Pipelines* is already an element in the lefthand menu, so click on *Pipelines*.
+
+Click on *Create Pipeline*. This will take you to the *Pipeline builder* page. Note that you can either create a pipeline using the graphical tools or, as with any object 
+in OpenShift, simply give it the YAML. In this case we will use the graphical interface to quickly create a single task pipeline using the task we just created.
+
+Change the *Name* to *example-pipeline1*.
+
+Click on *Add Task*. In the pop-up box type *ctask1* (the name of the task we just created). The system will show the task; click on *Add*. Leave everything else
+as it is and hit *Create*.
+
+image::010-image004.png[Created pipeline,width=600px]
+
+Again, as with the Task, we have created a template for running this Pipeline. The Pipeline consists of one task, which has two steps. Pull down the *Actions* pulldown and hit *Start*.
+
+The pipeline will now execute. Note the icon shows *two* distinct steps within the task. When the pipeline completes there will be a green arrow next to the Task (with multiple tasks this gives a clear indication of success or failure for each task). If you now
+click directly on the Pipeline icon it will display a list of Tasks (in this case, just the one) with the logs from that task (as shown below).
+
+image::010-image005.png[Successful log of task,width=600px]
+
+=== Combining Multiple Tasks in a Pipeline
+
+For this part of the exercise we are going to create two additional tasks. Click on *Tasks* in the lefthand panel and using *Create Task* add the two following tasks:
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask2
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 2"
+----
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask3
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 3"
+----
+
+We will now create a Pipeline, but instead of using the *builder* we will do it via YAML. Click on *Pipelines* on the lefthand panel, then *Create Pipeline*. Switch to *YAML* view and replace the text in the *YAML* editor with:
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cpipeline1
+spec:
+  tasks:
+    - name: task1
+      taskRef:
+        kind: Task
+        name: ctask1
+    - name: task2
+      taskRef:
+        kind: Task
+        name: ctask2
+    - name: task3
+      taskRef:
+        kind: Task
+        name: ctask3
+      runAfter:
+        - task1
+----
+
+Click *Save* and then execute the Pipeline using the *Actions* then *Start*.
+
+[TIP]
+====
+The syntax within a Pipeline definition is very simple; you define the set of tasks simply by providing them with a name, within the Pipeline, and a reference
+to a preloaded task name. In this case our tasks are called ctaskx, and the tasks in the Pipeline are called taskx. Also the Pipeline allows for order definition. +
+
+In this case we have said run task1 and task2 independently and then run task3 after task1 has completed. +
+
+Also note that the task3 uses a later (RHEL9) version of the base image. Check the logs to see what it reports as its version.
+====
+
+image::010-image006.png[Successful run,width=600px]
+
+By abstracting the atomic task behaviour into separate tasks and then having the *Pipeline* control the ordering of the tasks there is a nice distinction between the functionality. However the tasks are physically different and behave 
+like individual, transient containers. Persistence of information between tasks is done using *Workspaces* which provide, again, an abstracted
+approach to Pipeline technology.
+
+=== Persisting data between Tasks 
+
+We are going to create another pithy example here - in this case we are going to create three tasks, the first of which creates a file, the second checks it exists and the third deletes it.
+
+If we were just using Tasks the second task would fail; when the first task completes the Container is removed and all changes it made to the Container image would be lost. 
+
+[NOTE]
+====
+This isn't the case when you use *steps* that are the same Image; for efficiency a Task will reuse the file system of an Image across steps.
+====
+
+For this example we will create three new tasks. Using the *Tasks* menu item on the lefthand panel, *Create Task*, replace the YAML and create each of the following:
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifilecreate
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Creating the file in the workspace"
+    - name: createfile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - touch
+      args:
+        - "/d2s/test.txt"
+  workspaces:
+    - name: working
+      mountPath: /d2s
+----
+
+[TIP]
+====
+Note the addition of a *workspaces* component. This maps an externally defined piece of storage, named *working*, to the path */d2s* in the containers for *all* steps.
+====
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifilecheck
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Checking the file has been created in the workspace"
+    - name: checkfile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/bin/env bash
+        ls -alZ /d2s/test.txt
+  workspaces:
+    - name: working
+      mountPath: /d2s
+----
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifileremove
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Removing the file from the workspace"
+    - name: removefile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/bin/env bash
+        rm /d2s/test.txt
+  workspaces:
+    - name: working
+      mountPath: /d2s
+----
+
+Now we have three new tasks we can create a Pipeline to use them. Click on *Pipelines* on the lefthand panel. Click on *Create Pipeline*. Switch to *YAML view* if it isn't already on there. Replace the code with the following:
+
+[.console-input]
+[source,bash]
+----
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ubifilepipeline
+spec:
+  tasks:
+    - name: create
+      taskRef:
+        kind: task
+        name: ubifilecreate
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+    - name: check
+      taskRef:
+        kind: task
+        name: ubifilecheck
+      runAfter:
+        - create
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+    - name: remove 
+      taskRef:
+        kind: task
+        name: ubifileremove
+      runAfter:
+        - check
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+  workspaces:
+    - name: workingworkspace
+----
+
+[TIP]
+====
+Note that we provide a *workspace* to every task defined in the Pipeline (by creating an abstract workspace, called *workingworkspace*, and attaching it by name to the tasks using
+the name we used in the *Task* definition.
+====
+
+Hit *Create*.
+
+image::010-image007.png[File Pipeline,with=600px]
+
+Now in order to run the Pipeline with persisted storage we need to create some for it. Switch to the *Administrator* viewpoint, click on *Storage*, click on *PersistentVolumeClaims* then *Create PersistentVolumeClaim*.
+
+Set the *PersistentVolumeClaim name* to *pipeline-pvc*. Set the *Size* to *1 GB*. Hit *Create*.
+
+Switch back to the *Developer* viewpoint. Click on *Pipelines*. Click on *(PL) ubifilepipeline*. Pulldown the *Actions* pulldown and select *Start*.
+
+[TIP]
+====
+The Pipeline defines that it needs a workspace but the definition we provided didn't state what it was. The OpenShift UI automatically prompts you to choose how you will
+provide the workspace. We have created a PVC to provide persisted storage
+====
+
+Click on the pulldown for the *workingworkspace* workspace. Select *PersistentVolumeClaim*. A *PVC* pulldown will appear; click on this and it should list the 
+PVC we just created. Click on that to select it. Hit *Start*.
+
+[TIP]
+====
+The Pipeline should progress through successfully. Have a look at the logs and make sure each has performed correctly; each task has three steps, firstly to inform what version of RHEL the container is, secondly to echo the stage name, and thirdly to perform the action. +
+
+The tasks will create, check and delete a file on the shared storage
+====
+
+image::010-image008.png[Pipeline PVC,width=600px]
+
+=== Cleaning up
+
+[TIP]
+====
+When you create Objects in OpenShift they will remain resident until you remove them
+====
+
+To finish the Module head to the *Topology page*, go to the *Pipelines* panel and delete all the Pipelines there. Then go to the *Tasks* panel and remove the tasks you created.
+
+
+
+
+
+
+
+
+
+

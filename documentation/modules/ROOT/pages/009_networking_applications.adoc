@@ -1,0 +1,218 @@
+= Understanding Application Networking
+:!sectids:
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+image::009-image001.png[The Services in a Project]
+
+== *Understanding Application Networking*
+
+====
+*What will you learn?*
+
+This Module will go into depth around the mechanisms for Networking of Applications within OpenShift. This will cover the Services, which are bound to the Project, Routes, which provide the external traffic connectivity and inter-Application networking. It will also explain Network Policies which allow for fine-grain control of traffic to a Service.
+
+The Module will include some practical examples of Networking using three distinct Services in the Project
+
+After completing this Module you will understand the nature of the abstracted SDN and the Service endpoints, how to setup Routes and what capabilities inter-Application Networking provides for Developers
+====
+
+=== *Pre-Requisites*
+
+In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+
+[.console-input]
+[source,bash]
+----
+apps.ocp1.azure.dso.digital.mod.uk
+----
+
+[WARNING]
+====
+*Please Read* - if you are using a *shared* project you may encounter issues with naming; this is because Objects within a *Project* must be _uniquely_ named. If someone
+else is doing this course in the same Project they may have created objects with the names stated. +
+
+*If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating*
+====
+
+=== *Setting up the example Applications for the module*
+
+First we will setup three simple Applications within the Project. Make sure you are at the Developer Viewpoint. Click *+Add*. Choose *Container images*. Enter the following text into the *Image name from external registry* entry point:
+
+[.console-input]
+[source,bash]
+----
+quay.io/ilawson/devex4
+----
+
+In *Application* choose *Create Application* and give it the name *networking-app*. Change the *Name* to *application1*. Hit *Create*.
+
+Click *+Add* again. Choose *Import from Git*. Copy the text from below into the *Git Repo URL* textbox:
+
+[.console-input]
+[source,bash]
+----
+https://github.com/utherp0/bootcampapp
+----
+
+Choose *networking-app* from the *Application* pulldown. Set the *Name* to *application2*. Click *Create*.
+
+Click *+Add* again. Click on *All services*. Click on the *.NET* Builder Image. Click *Create Application*. Under the *Git Repo URL* pulldown click on *Try sample*. In *Application*
+select the *networking-app* option. Give it the *Name* *application3*. Hit *Create*.
+
+image::009-image002.png[The Module Applications,width=550px]
+
+=== *Understanding Networking in OpenShift*
+
+OpenShift has two basic primitives for Networking, *Services* and *Routes*. 
+
+A *Service* provides a port-based ingress point into the _Application_. A *Route* provides a Fully Qualified Domain Name *URI* to ingress traffic into a *Service*.
+
+[sidebar]
+.The SDN - Software Defined Network
+--
+Everything that runs within OpenShift/Kubernetes lives on an internal network, the *SDN*, which covers all of the machines that make up the Cluster.
+
+This Network is completely internalised; it has no visibility of connectivity to the outside world, and is just an overlay network for all the Applications running within the Cluster.
+
+The *Services* provide 'doorbells' into the Application, and are based on individual ports. For instance, if you have an Application that listens on two Ports, you would need two Services for it to be able to receive traffic.
+
+Where it gets interesting is that the *Services* have IP addresses on the SDN and are *singular* regardless of the number of replicas of the Application. So if you have 10 replicas of
+your Application running in Pods, each Pod has a unique IP address _in a different range_ to the Service. The Service is a loadbalancer across all the replicas.
+
+*Routes* then provide the abstracted linkage of the outside world into the *Services*, but the nice thing about the Routes is that they can be changed without changing the underlying Services, and can
+actually point to *multiple* Services with a % load balancing themselves.
+--
+
+For the sake of simplicity, and to highlight a nice feature of the UI, we are going to add links to the *Services* and *Routes* on the lefthand navigation panel. To do this click on *Search*. Click the 
+pulldown for *Resources* and search for 'service'. Tick the box next to *Service* and then click on the *Add to navigation*. Then search for 'route', tick the box next
+to *Route* and then click on *Add to navigation*.
+
+image::009-image003.png[Selecting add-ons for navigation,width=550px]
+
+=== *Using Shorthand Service names for inter-Application communication*
+
+[TIP]
+====
+In this exercise we will show how the system provides 'shortcuts' within the Applications for talking to Services in the same Project
+====
+
+First, click on the shortcut on the lefthand panel for *Services*.
+
+[TIP]
+====
+You will see a list of Services with pertinent information about them listed.
+====
+
+[NOTE]
+====
+Here's where it gets interesting. Each of the Services is named after the application it is linked to; when we created the applications giving them a name assigned
+that name to all objects tied to that Application, for instance *DeploymentConfig*, *Services*, etc. +
+
+The OpenShift SDN provides _resolvable_ DNS entries for all the Services within the Project _by name_. In English it means that, local to the Project, all Applications
+can *directly* reference the Services by name only, which is what we will now prove
+====
+
+Switch to the *Topology* page and click on the Roundel for *Application1*. The righthand panel should now display the overview information for the *Deployment* 'application1'. In the *Pods* click on the active Pod name. 
+
+[WARNING]
+====
+We will now be doing some commands within the Terminal for the Pod. The security settings for the Cluster may have a very short inactivity timeout; if you get disconnected simply reconnect by clicking on the prompt and carry on
+from where you are in the instructions.
+====
+
+Click on *Terminal*. Now enter the following command:
+
+[.console-input]
+[source,bash]
+----
+curl http://application2:8080
+----
+
+What you will see is a set of HTML; this is the output of the Application *application2*. Using the 'curl' command we have done a URI pull directly. 
+
+Now type:
+
+[.console-input]
+[source,bash]
+----
+env | grep APPLICATION2
+----
+
+OpenShift also injects a lot of connectivity information directly into the other Applications for the Service endpoints; note the definitions of protocols, ports and IP addresses.
+
+[TIP]
+====
+Also note that the *Service* application2 actually has two endpoints defined via the Service. One is for http (8080), one is for https (8443)
+====
+
+=== *Using FQDN references for Service communications*
+
+We have shown that you can use the *name* of the *Service* to directly communicate from one Application to another. This is useful because it is a direct reference, meaning
+a lack of need for Service discovery and external resolution of the Services. 
+
+OpenShift also provides resolution of the Service using a Fully Qualified Domain Name, rather than the shorthand Service name notation.
+
+Switch to the *Topology* panel. Click on the roundel for *application2*. In the righthand panel which will be showing overview information for the *Deployment* application2, click on the active Pod name.
+
+[WARNING]
+====
+We will now be doing some commands within the Terminal for the Pod. The security settings for the Cluster may have a very short inactivity timeout; if you get disconnected simply reconnect by clicking on the prompt and carry on
+from where you are in the instructions.
+====
+
+Click on *Terminal*. Now enter the following command:
+
+[.console-input]
+[source,bash]
+----
+curl http://application3.redhat-training.svc.cluster.local:8080
+----
+
+[TIP]
+====
+The format of the FQDN for internal communications with Applications in _any Project you have visibility of_ is (service name).(project name).*svc.cluster.local*
+====
+
+You should see the HTML output of the *application3* application via the *application3* service.
+
+[TIP]
+====
+If you have multiple Projects in OpenShift you can communicate between them using this method. 
+====
+
+[NOTE]
+====
+Also be aware that there are objects in OpenShift called *NetworkPolicies* that allow very fine-grain control over who/what can access your Service endpoints. Due to security these are prohibited in D2S, other than administration-created ones.
+====
+
+=== Cleaning up
+
+[TIP]
+====
+When you create Applications in OpenShift they will remain resident until you remove them
+====
+
+To finish the Module head to the *Topology page*, click on each of the *Application Groups* (i.e. (A) networking-app) and in the *Actions* menu on the righthand panel for the Application choose *Delete Application*.
+The system will prompt you to enter the name of the Application Group; enter this name and press return/hit *Delete*.
+
+[TIP]
+====
+Deleting the Application Group removes all of the Objects relating to the application
+====
+
+
+
+
+
+
+
+
+
+
+
+
+

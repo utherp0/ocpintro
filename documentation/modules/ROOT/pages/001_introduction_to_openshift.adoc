@@ -1,0 +1,78 @@
+= High Level Introduction to OpenShift
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+:!sectids:
+
+image::001-image001.png[OpenShift]
+
+== *A High Level Introduction to OpenShift for Developers*
+
+====
+*What will you learn?*
+
+This Module will give you an overview of what OpenShift actually is, and how it works.
+
+This will involve explaining the Object model and Kubernetes. The Module is a non-interactive one and can be skipped if the Reader understands the basic concepts of Objects, Reconciliation, Eventually Consistent State and Containers/Pods.
+====
+
+=== The beauty of Kubernetes
+
+Kubernetes comes across as extremely complex, but under the covers it's an elegant and brilliantly simple engine. It uses a clever form of abstraction between 'intended state' and 
+'actual state' which makes it very resilient, self-healing and robust. Put simply *Kubernetes is an object-based state engine*.
+
+What we mean by 'objects' are defined typed components. *Kubernetes* has a defined lexicon of Objects that it understands, and when you interact with *Kubernetes* or *OpenShift* all you are doing is creating, modifying or deleting Objects.
+
+The abstracted idea comes in with the physical realisation of the Objects. In essence *Kubernetes* is two distinct engines; a control plane that handles creation, modification and deletion of instances
+of Objects, and a realisation point where the physical versions of Objects, at their defined state, are maintained. 
+
+In *Kubernetes* speak you have *Worker nodes* where the actual workloads, Pods, are executed and maintained. Kubernetes has an agent, a small mini-brain, running on each of the Nodes that responds to
+state change requests from the control plane (called a *kubelet*). The task of the *kubelet* is to make the required physical state match the required Object state. It does this
+through a process, not instanteous, called *reconcilation*.
+
+Basically the control plane consists of an interface allowing state change requests, a 'brain' (clustered data store) where the required Object states are stored and communications to the *kubelets* for reconciliation actions. 
+
+[NOTE]
+====
+It gets much cooler. OpenShift is built on a technology called the *operator framework* which allows for the extension of the Object _lexicon_ without changing the control plane - more of this later
+====
+
+_Why is this approach clever?_ For a start, having a disconnected state change/reconciliation architecture allows the system to be very resilient. It's a fire-and-forget model but it's also a state engine, meaning that it can react to invalid state quickly. In fact
+both *Kubernetes* and *OpenShift* are 'violently' reactive; if the brain says there needs to be, say, four replicas of an application then *Kubernetes* continually works to reconcile that state until the physical world,
+ represented by the reports from the Kubelet, matches exactly the intended state in the brain.
+
+=== How does this apply to 'Applications'
+
+Interestingly there is a project called *KCP* that disentangles the *Kubernetes* control plane from *Kubelets*. In English this means that, theoretically, if you can write a reconcilation agent for *anything* then anything can be orchestrated using the 
+state/reconciliation engine. Imagine having a *Kubernetes* control plane that worked with 'cars' instead of 'applications'.
+
+But back to Applications; *Kubernetes* was designed to be a high-level orchestrator of 'containers'. When Containers first hit the industry they were limited to running on a single box. *Docker* was a clever technology but 
+focused on a single host. Google had developed a proprietary internal project called *Borg* which handled millions of Containers, but wanted something
+open source so as to allow for innovation outside of Google. *Kubernetes* came out of that.
+
+The smallest deployable atomic component of a *Kubernetes* system is the *Pod*, which is one or more Containers deployed to the same physical *space*. All orchestration within *Kubernetes* is based on the placement and maintenance of Pods on Worker Nodes via Kubelets.
+
+In essence a Pod is an instance of a deployable Application, where Application is *anything* that can represented in a Container, from the smallest Microservice right up to a full database. 
+
+The concept of a *Pod* was also intended to encourage Cloud Native behaviour; the Pods are transient, meaning they can be lost and automatically recreated, using the state/reconciliation described earlier.
+
+=== So, what is OpenShift?
+
+OpenShift is badly named. It *is* Kubernetes, with enterprise additions to make it secure, easy to access and use from an Administration and a Development perspective.
+
+Going back to what we were talking about around the Object lexicon - the control plane actually works by having a number of while-true loops that are waiting for events. Each of the while-true loops, called a *Controller*, owns
+a distinct Object type, and receives and processes the events relating to that object (create, edit, delete).
+
+OpenShift uses a technology called the *Operator Framework*. In English an Operator actually provides an application that acts as an additional *Controller* (the while-true loops that process object-specific requests) for an Object that is external to the *Kubernetes* lexicon. Basically you can create and manipulate new Object types in *OpenShift*
+by using an Operator. In fact all of OpenShift *is* Operators adding additional functionality on top of *Kubernetes*. This is a brilliant concept as
+it allows you to extend the Object model yourself without changing the base *Kubernetes*.
+
+=== OpenShift from a Developer perspective
+
+Away from the mechanics of *Kubernetes* the OpenShift system is a joy for developers. If you come from a dev background you'll have had the usual issues; hard to get a dev environment, hard to work in a consistent way with the team, hard to work with build systems and the like.
+
+*OpenShift* provides a far more efficient way to develop. In the space of a couple of clicks you can have a running Application. The system provides consistent build and deployment frameworks out of the box, but behaves like a big box of useful
+technical Lego; if you want to take a simple path through development, the tools are all there to help (and this course explains a number of them). It is designed to allow us developers
+to spend more time developing and less time doing nugatory tasks that add nothing to our end solutions.
+
+

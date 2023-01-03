@@ -1,0 +1,60 @@
+= A Glossary of Terms
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+:!sectids:
+
+image::001-image001.png[OpenShift]
+
+== *A Glossary of Technical Terms used in the Modules*
+
+====
+*This page contains some English explanations of some of the technical terms used in the Modules*
+
+OpenShift and Kubernetes have a lot of technical concepts; this page contains descriptions for some of the more common ones used in the Modules.
+====
+
+[frame=ends]
+|===
+|Technical Term |English Description
+
+|*Viewport*
+|The OpenShift UI actually consists of two different views on the System; the Administrator one provides a more object-oriented drilldown into the contents, the Developer one provides an opinionated set of UI component specifically designed for Developer to build and maintain applications
+
+|*Project*
+|OpenShift (and Kubernetes) work with a bounded set of resources. In OpenShift this is known as a *Project* (in Kubernetes it is known as a *Namespace*). The Project contains all the objects that make up your applications, and as an Owner/User of the project you have the ability to create any objects that you have access to within it.
+
+|*Application*
+|On the Developer Viewport of the UI, OpenShift has the concept of an application – which is short for application grouping. This is a cosmetic grouping of individual applications, allowing you to perform high level tasks on them.
+
+|*Application Name*
+|On the Developer Viewport of the UI, this refers to the name of the *Application Grouping* (defined above)
+
+|*Name*
+|All Objects in OpenShift have a *Name* which uniquely identifies them (within the confines of a Project). Be aware that this uniqueness is relative to the Project; other people may have identically named Objects in other projects. 
+
+|*Deployment*
+|A Deployment object is a kubernetes-native object that defines in very simple terms how you deploy an 'Application'. It consists of the Image to use for the Application and the number of replicas (copies) to deploy
+
+|*DeploymentConfig*
+|A DeploymentConfig object is an OpenShift specific Object that extends upon the concept of the Deployment object. It provides a temporal concept of rollouts (allowing you to rollback deployments) and different modes of rollout supporting zero-downtime ('rolling') and full removal before recreate ('recreate').
+
+|*Labels*
+|All Objects in OpenShift support labelling. These provide a way of attaching contextual information to the Objects that make up your Applications, and these can be used by the system itself for physical placement of Applications and configuration of Applications
+
+|*Pod*
+|A Pod is the smallest atomic component orchestrateable by OpenShift. Kubernetes and OpenShift work with Pods, controlling when and where they are physically deployed. In the majority of case a Pod contains a single running Container, but more complicated Applications can consist of multiple Containers being executed in the same physcal Pod.
+
+|*Services*
+|The Services are port-based points of ingress of traffic into the Application. OpenShift has an SDN (software defined network) on which all the Pods live; think of the Services as singular doorbells to the ports within the Applications
+
+|*Routes*
+|The Routes are the external connectivity into the Services (defined above). These are fully qualified domain names (FQDN) that are reachable from outside the cluster and provide the mechanism for ingressing traffic from the outside into the Application Pods.
+
+|*Kebab*
+|This is the name for the three vertical pulldown points within OpenShift
+
+|*Instantiate*
+|Instantiate means 'to create an instance of' and refers to the creation of individual objects within OpenShift
+
+|===

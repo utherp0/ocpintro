@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding Application Networking :: Developer Introduction to OpenShift</title>
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () { 
+      const urlParams = new URLSearchParams(window.location.search);
+      const clusterName = urlParams.get('CLUSTER_SUBDOMAIN');
+      const projectName = urlParams.get('PROJECT');
+      if (clusterName) {
+        showCluster( clusterName );
+      }
+      else {
+        showClusterForm();
+      }
+
+      if (projectName) {
+        showProject( projectName );
+      } else {
+        showProjectForm();
+      }
+    } );
+
+
+    function sliceCluster(clusterName){
+      if (clusterName.length > 70) {
+          return "..." + clusterName.slice(35);
+      } else {
+          return clusterName;
+      }
+    }
+
+    function showCluster( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "none";
+      document.getElementById('navbar-form-filled').style.display = "flex";
+      document.getElementById('cluster_subdomain').textContent = sliceCluster(clusterName);
+      document.getElementById('clusterfield2').value = clusterName;
+
+    }
+
+    function showClusterForm( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "flex";
+      document.getElementById('navbar-form-filled').style.display = "none";
+    }
+
+    function gowithcluster() {
+      elClusterInput = document.getElementById('clusterfield');
+      elProjectInput = document.getElementById('projectfield2');
+
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+    function showProject( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "none";
+      document.getElementById('navbar-form-project-filled').style.display = "flex";
+      document.getElementById('project').textContent = projectName;
+      document.getElementById('projectfield2').value = projectName;
+    }
+
+    function showProjectForm( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "flex";
+      document.getElementById('navbar-form-project-filled').style.display = "none";
+    }
+
+    function gowithproject() {
+      elProjectInput = document.getElementById('projectfield');
+      elClusterInput = document.getElementById('clusterfield2');
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+  </script>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="../..">Developer Introduction to OpenShift</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item" id="navbar-form-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithcluster();">
+            <input size="40" id="clusterfield" type="text" placeholder="Enter Cluster Subdomain">
+            <input type="hidden" id="projectfield2" name="projectfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="cluster_subdomain"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+
+         <div class="navbar-item" id="navbar-form-project-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithproject();">
+            <input size="40" id="projectfield" type="text" placeholder="Enter Project Name">
+            <input type="hidden" id="clusterfield2" name="clusterfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-project-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="project"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+<!---
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+--->
+      </div>
+    </div>
+  </nav>
+</header><div class="body">
+<div class="nav-container" data-component="d2sdevex" data-version="4.11">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">D2S Introduction to OpenShift Course</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="000_module_overview.html"><strong>000</strong> - Module Overviews</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="001_introduction_to_openshift.html"><strong>001</strong> - A High Level Introduction to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="002_deploying_an_application.html"><strong>002</strong> - Deploying an Application to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="003_s2i.html"><strong>003</strong> - Deploying an Application from Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="004_configuring_an_application.html"><strong>004</strong> - Configuring an Application</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="005_deploying_multiple_applications.html"><strong>005</strong> - Deploying Multiple Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="006_config_injection.html"><strong>006</strong> - Injecting Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="007_secrets.html"><strong>007</strong> - Injecting Secure Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="008_storage.html"><strong>008</strong> - Adding Storage to Apps</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="009_networking_applications.html"><strong>009</strong> - Understanding Application Networking</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="010_pipelines.html"><strong>010</strong> - Introducing Pipelines for Developers</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="100_glossary.html"><strong>Glossary</strong> - Terms used in the Modules</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">D2S Introduction to OpenShift Course</span>
+    <span class="version">4.11</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">D2S Introduction to OpenShift Course</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">4.11</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">D2S Introduction to OpenShift Course</a></li>
+    <li><a href="009_networking_applications.html"><strong>009</strong> - Understanding Application Networking</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/uther/git/d2s/documentation/modules/ROOT/pages/009_networking_applications.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Understanding Application Networking</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock right text-center">
+<div class="content">
+<img src="_images/d2s.png" alt="D2S Logo" width="190px">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/009-image001.png" alt="The Services in a Project">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2><strong>Understanding Application Networking</strong></h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>What will you learn?</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will go into depth around the mechanisms for Networking of Applications within OpenShift. This will cover the Services, which are bound to the Project, Routes, which provide the external traffic connectivity and inter-Application networking. It will also explain Network Policies which allow for fine-grain control of traffic to a Service.</p>
+</div>
+<div class="paragraph">
+<p>The Module will include some practical examples of Networking using three distinct Services in the Project</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the nature of the abstracted SDN and the Service endpoints, how to setup Routes and what capabilities inter-Application Networking provides for Developers</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Pre-Requisites</strong></h3>
+<div class="paragraph">
+<p>In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.</strong> If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing <strong>RETURN</strong> after pasting it). Then add the Project name if it is not already there, again pressing <strong>RETURN</strong> after entering it into the field.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apps.ocp1.azure.dso.digital.mod.uk</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Please Read</strong> - if you are using a <strong>shared</strong> project you may encounter issues with naming; this is because Objects within a <strong>Project</strong> must be <em>uniquely</em> named. If someone
+else is doing this course in the same Project they may have created objects with the names stated.<br></p>
+</div>
+<div class="paragraph">
+<p><strong>If you get an error when trying to create <em>anything</em> as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Setting up the example Applications for the module</strong></h3>
+<div class="paragraph">
+<p>First we will setup three simple Applications within the Project. Make sure you are at the Developer Viewpoint. Click <strong>+Add</strong>. Choose <strong>Container images</strong>. Enter the following text into the <strong>Image name from external registry</strong> entry point:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">quay.io/ilawson/devex4</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In <strong>Application</strong> choose <strong>Create Application</strong> and give it the name <strong>networking-app</strong>. Change the <strong>Name</strong> to <strong>application1</strong>. Hit <strong>Create</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Click <strong>+Add</strong> again. Choose <strong>Import from Git</strong>. Copy the text from below into the <strong>Git Repo URL</strong> textbox:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">https://github.com/utherp0/bootcampapp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Choose <strong>networking-app</strong> from the <strong>Application</strong> pulldown. Set the <strong>Name</strong> to <strong>application2</strong>. Click <strong>Create</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Click <strong>+Add</strong> again. Click on <strong>All services</strong>. Click on the <strong>.NET</strong> Builder Image. Click <strong>Create Application</strong>. Under the <strong>Git Repo URL</strong> pulldown click on <strong>Try sample</strong>. In <strong>Application</strong>
+select the <strong>networking-app</strong> option. Give it the <strong>Name</strong> <strong>application3</strong>. Hit <strong>Create</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/009-image002.png" alt="The Module Applications" width="550px">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Understanding Networking in OpenShift</strong></h3>
+<div class="paragraph">
+<p>OpenShift has two basic primitives for Networking, <strong>Services</strong> and <strong>Routes</strong>.</p>
+</div>
+<div class="paragraph">
+<p>A <strong>Service</strong> provides a port-based ingress point into the <em>Application</em>. A <strong>Route</strong> provides a Fully Qualified Domain Name <strong>URI</strong> to ingress traffic into a <strong>Service</strong>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">The SDN - Software Defined Network</div>
+<div class="paragraph">
+<p>Everything that runs within OpenShift/Kubernetes lives on an internal network, the <strong>SDN</strong>, which covers all of the machines that make up the Cluster.</p>
+</div>
+<div class="paragraph">
+<p>This Network is completely internalised; it has no visibility of connectivity to the outside world, and is just an overlay network for all the Applications running within the Cluster.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>Services</strong> provide 'doorbells' into the Application, and are based on individual ports. For instance, if you have an Application that listens on two Ports, you would need two Services for it to be able to receive traffic.</p>
+</div>
+<div class="paragraph">
+<p>Where it gets interesting is that the <strong>Services</strong> have IP addresses on the SDN and are <strong>singular</strong> regardless of the number of replicas of the Application. So if you have 10 replicas of
+your Application running in Pods, each Pod has a unique IP address <em>in a different range</em> to the Service. The Service is a loadbalancer across all the replicas.</p>
+</div>
+<div class="paragraph">
+<p><strong>Routes</strong> then provide the abstracted linkage of the outside world into the <strong>Services</strong>, but the nice thing about the Routes is that they can be changed without changing the underlying Services, and can
+actually point to <strong>multiple</strong> Services with a % load balancing themselves.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For the sake of simplicity, and to highlight a nice feature of the UI, we are going to add links to the <strong>Services</strong> and <strong>Routes</strong> on the lefthand navigation panel. To do this click on <strong>Search</strong>. Click the
+pulldown for <strong>Resources</strong> and search for 'service'. Tick the box next to <strong>Service</strong> and then click on the <strong>Add to navigation</strong>. Then search for 'route', tick the box next
+to <strong>Route</strong> and then click on <strong>Add to navigation</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/009-image003.png" alt="Selecting add-ons for navigation" width="550px">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Using Shorthand Service names for inter-Application communication</strong></h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In this exercise we will show how the system provides 'shortcuts' within the Applications for talking to Services in the same Project</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>First, click on the shortcut on the lefthand panel for <strong>Services</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You will see a list of Services with pertinent information about them listed.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Here&#8217;s where it gets interesting. Each of the Services is named after the application it is linked to; when we created the applications giving them a name assigned
+that name to all objects tied to that Application, for instance <strong>DeploymentConfig</strong>, <strong>Services</strong>, etc.<br></p>
+</div>
+<div class="paragraph">
+<p>The OpenShift SDN provides <em>resolvable</em> DNS entries for all the Services within the Project <em>by name</em>. In English it means that, local to the Project, all Applications
+can <strong>directly</strong> reference the Services by name only, which is what we will now prove</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Switch to the <strong>Topology</strong> page and click on the Roundel for <strong>Application1</strong>. The righthand panel should now display the overview information for the <strong>Deployment</strong> 'application1'. In the <strong>Pods</strong> click on the active Pod name.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>We will now be doing some commands within the Terminal for the Pod. The security settings for the Cluster may have a very short inactivity timeout; if you get disconnected simply reconnect by clicking on the prompt and carry on
+from where you are in the instructions.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Terminal</strong>. Now enter the following command:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://application2:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What you will see is a set of HTML; this is the output of the Application <strong>application2</strong>. Using the 'curl' command we have done a URI pull directly.</p>
+</div>
+<div class="paragraph">
+<p>Now type:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">env | grep APPLICATION2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>OpenShift also injects a lot of connectivity information directly into the other Applications for the Service endpoints; note the definitions of protocols, ports and IP addresses.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Also note that the <strong>Service</strong> application2 actually has two endpoints defined via the Service. One is for http (8080), one is for https (8443)</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Using FQDN references for Service communications</strong></h3>
+<div class="paragraph">
+<p>We have shown that you can use the <strong>name</strong> of the <strong>Service</strong> to directly communicate from one Application to another. This is useful because it is a direct reference, meaning
+a lack of need for Service discovery and external resolution of the Services.</p>
+</div>
+<div class="paragraph">
+<p>OpenShift also provides resolution of the Service using a Fully Qualified Domain Name, rather than the shorthand Service name notation.</p>
+</div>
+<div class="paragraph">
+<p>Switch to the <strong>Topology</strong> panel. Click on the roundel for <strong>application2</strong>. In the righthand panel which will be showing overview information for the <strong>Deployment</strong> application2, click on the active Pod name.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>We will now be doing some commands within the Terminal for the Pod. The security settings for the Cluster may have a very short inactivity timeout; if you get disconnected simply reconnect by clicking on the prompt and carry on
+from where you are in the instructions.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Terminal</strong>. Now enter the following command:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://application3.redhat-training.svc.cluster.local:8080</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The format of the FQDN for internal communications with Applications in <em>any Project you have visibility of</em> is (service name).(project name).<strong>svc.cluster.local</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You should see the HTML output of the <strong>application3</strong> application via the <strong>application3</strong> service.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you have multiple Projects in OpenShift you can communicate between them using this method.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Also be aware that there are objects in OpenShift called <strong>NetworkPolicies</strong> that allow very fine-grain control over who/what can access your Service endpoints. Due to security these are prohibited in D2S, other than administration-created ones.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3>Cleaning up</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When you create Applications in OpenShift they will remain resident until you remove them</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To finish the Module head to the <strong>Topology page</strong>, click on each of the <strong>Application Groups</strong> (i.e. (A) networking-app) and in the <strong>Actions</strong> menu on the righthand panel for the Application choose <strong>Delete Application</strong>.
+The system will prompt you to enter the name of the Application Group; enter this name and press return/hit <strong>Delete</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Deleting the Application Group removes all of the Objects relating to the application</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+= An Overview of the Modules
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+:!sectids:
+
+image::000-image001.png[OpenShift]
+
+== *What the Modules cover*
+
+====
+*001 - A High Level Introduction to OpenShift*
+
+This Module will give you an overview of what OpenShift actually is, and how it works.
+
+This will involve explaining the Object model and Kubernetes. The Module is a non-interactive one and can be skipped if the Reader understands the basic concepts of Objects, Reconciliation, Eventually Consistent State and Containers/Pods.
+====
+
+====
+*002 - Deploying an Application to OpenShift*
+
+This Module will introduce you to the concepts of *Applications* from the perspective of deploying them on OpenShift. 
+
+This application already exists as a Docker Image; this Module will walk you through the steps to execute it as an Application. 
+
+After completing the Module you will understand the concepts of an Application and how to instantiate one with OpenShift.
+====
+
+====
+*003 - Deploying an Application from Source Code*
+
+This Module will introduce you to the concept of building Applications directly from Source Code rather than a pre-built Image
+
+This will highlight the functionality within OpenShift that guides you through the process 
+
+After completing the Module you will be able to build an Application from Source and understand what OpenShift is doing
+====
+
+====
+*004 - Configuring an Application*
+
+This module will introduce you to the configuration options for the Applications running within OpenShift
+
+This will highlight the components you can change and their effect
+
+After completing the Module you will be able set various behaviours of the Application running in OpenShift, from the perspective of the way in which the Application is hosted
+====
+
+====
+*005 - Deploying Multiple Apps*
+
+This short module will introduce you to the concepts around deploying multiple Applications in the same Project
+
+This will highlight the capabilities in terms of grouping and also the nature of implicit Service Discovery provided by OpenShift between Applications running in the same Project
+
+After completing the Module you will understand the concepts of multiple Application hosting and the advantages provided working within a single Project
+====
+
+====
+*006 - Injecting Configuration into Apps*
+
+This Module will introduce you to the concepts of Config Maps and Environment Variables being injected into active Pods
+
+This will highlight the functionality of changing Application behaviour without changing code and therefore the Image that is used for the Application. This allows for dependency injection to be used in Applications, and encourages the creation of Cloud Native behaviours.
+
+After completing the Module you will understand how to create, manipulate and use Config Maps to inject runtime information into Applications in OpenShift
+====
+
+====
+*007 - Injecting Secure Configuration into Apps*
+
+This short Module will introduce the concepts known as 'Secrets' which allow for the injection of encrypted information into the Applications
+
+This will demonstrate the insertion of information that is secure to the Application, such as connection strings and passwords
+
+After completing this Module you will understand the difference between Config Maps and Secrets, the usecases for the latter and how to create and manipulate these secrets
+====
+
+====
+*008 - Adding Storage to Apps*
+
+The Module introduces the concepts of Persistent Storage, which gives Applications storage that exists and persists beyond the lifespan of the Pod running in OpenShift
+
+This will demonstrate the concept, usecases and constructs used to create, manipulate and retain storage for Applications
+
+After completing this Module you will understand the concepts of Persistent Storage with regard to Applications in OpenShift
+====
+
+====
+*009 - Understanding Application Networking*
+
+This Module will go into depth around the mechanisms for Networking of Applications within OpenShift. This will cover the Services, which are bound to the Project, Routes, which provide the external traffic connectivity and inter-Application networking. It will also explain Network Policies which allow for fine-grain control of traffic to a Service.
+
+The Module will include some practical examples of Networking using three distinct Services in the Project
+
+After completing this Module you will understand the nature of the abstracted SDN and the Service endpoints, how to setup Routes and what capabilities inter-Application Networking provides for Developers
+====
+
+====
+*010 - Introducing Pipelines for Developers*
+
+This Module will explain the basics of the Tekton Pipeline functionality within OpenShift from a developer's perspective
+
+The Module will walk you through creating tasks and pipelines, executing those tasks and pipelines within OpenShift, and how to add persistent storage between tasks.
+
+It will also explain the theory behind Tasks and Pipelines to enable you to understand and exploit the concepts
+
+After completing this Module you will understand the capabilities of Tekton and be able to create Tasks and Pipelines
+====

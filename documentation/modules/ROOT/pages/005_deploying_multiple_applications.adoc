@@ -1,0 +1,195 @@
+= Deploying Multiple Applications
+:!sectids:
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+image::005-image001.png[Multiple Applications]
+
+== *Deploying Multiple Applications*
+
+====
+*What will you learn?*
+
+This short module will introduce you to the concepts around deploying multiple Applications in the same Project
+
+This will highlight the capabilities in terms of grouping and also the nature of implicit Service Discovery provided by OpenShift between Applications running in the same Project
+
+After completing the Module you will understand the concepts of multiple Application hosting and the advantages provided working within a single Project
+====
+
+=== *Pre-Requisites*
+
+In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+
+[.console-input]
+[source,bash]
+----
+apps.ocp1.azure.dso.digital.mod.uk
+----
+
+[WARNING]
+====
+*Please Read* - if you are using a *shared* project you may encounter issues with naming; this is because Objects within a *Project* must be _uniquely_ named. If someone
+else is doing this course in the same Project they may have created objects with the names stated. +
+
+*If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating*
+====
+
+=== *Installing the multiple Applications*
+
+First we will install three Applications, two of which will be in the same Application Group.
+
+Ensure you have followed the pre-requisites above. Switch to the *Topology* viewpoint if you are not already on it.
+
+Select *+Add*. Choose *Import from Git*.
+
+[TIP]
+====
+The *Import from Git* option is a nice fast-track way of setting up an Application; OpenShift will verify the Git repository, examinine it, and auto-deduce which
+of the S2I (Source-2-Image) frameworks to use to build the Application. If there are multiple base framework images, i.e. if you choose Node.js there are a number of supported versions, the Wizard will
+prompt you to choose which one to use.
+====
+
+Copy the following location into the *Git Repo URL*:
+
+[.console-input]
+[source,bash]
+----
+https://github.com/utherp0/bootcampapp
+----
+
+When you add the text the Wizard will validate the URL and provide you with the 'Red Hat OpenJDK17 (UBI 8)' framework.
+
+image::005-image002.png[Automatic choice of framework,width=400px]
+
+[NOTE]
+====
+We are going to create a JAVA Application using the OpenJDK framework; this executes a Maven build but interestingly the source code is
+actually *Quarkus*, a superb new spin of JAVA compilation that makes JAVA very fast to deploy with a smaller footprint.
+====
+
+Scroll down to *Application* and select *Create Application*. In the *Application Name* enter:
+
+[.console-input]
+[source,bash]
+----
+group1-app
+----
+
+Set the *Name* to:
+
+[.console-input]
+[source,bash]
+----
+application1
+----
+
+Leave all other options as they are and hit *Create*. When the topology page appears click on the Roundel for *Application1*.
+
+[NOTE]
+====
+Under the *Pods* part of the tab you will see a message saying *'Waiting for the build'*. OpenShift/Kubernetes works by reconciling the actual physical components created against the desired state and when OpenShift
+creates an application it creates *both* the BuildConfig, which builds the Application, and the Deployment/DeploymentConfig which deploys it. +
+
+The Deployment will instantly try to create the Application, because that is the desired state it wants, but at this point the Build hasn't completed so the composite Image, made
+up of the compiled source and the framework image, doesn't exist, so you can get warning messages.
+====
+
+Select *+Add* again. This time we will add a sample application just to show the functionality you can use for quickstarting an Application development.
+
+Click on *Samples*.
+
+Click on *Basic .NET*. Leave all the options as default and simply click on *Create*.
+
+[NOTE]
+====
+Note that this option has far fewer parameters to choose from than a normal Application. That is because OpenShift sets up all the options you need specific to the Sample. +
+
+Also note that the Application appears in an Application Grouping called *sample-app*.
+====
+
+Select *+Add* again. This time we will add an Application from a pre-built image. 
+
+Click on *Container Images*. 
+
+Copy the text below into the *Image name from external registry* field:
+
+[.console-input]
+[source,bash]
+----
+quay.io/ilawson/functest
+----
+
+In the *General* tab pulldown the *Application* selection box and select *group1-app*. The *Name* should be autofilled with *functest*. Click on *Create*.
+
+Your topology should now look something similar to this:
+
+image::005-image003.png[Three Applications,width=350px]
+
+[TIP]
+====
+Note that you have two application groupings. These are effectively cosmetic but very useful for keeping track of your applications in a combined component way.
+====
+
+=== *Interacting with Application Groupings*
+
+Now we are going to add the *dotnet-basic* sample into our group1-app application grouping. Hold down the *Shift* button, click and hold on the Roundel for the dotnet-basic application, and drag it into the *group1-app* area (within the boundary). Release the mouse button.
+
+You will be prompted as to whether you want to move it - click *Move*.
+
+image::005-image004.png[Confirmation,width=450px]
+
+The topology page will now display a single Application Grouping with all three applications in it as shown below:
+
+image::005-image005.png[Single Application grouping,with=500px]
+
+Now hold the *Shift* key and select and hold on the Roundel for *application1*. Move it out of the group, release the button and hit *Remove*.
+
+[NOTE]
+====
+In actuality this shows a powerful part of the OpenShift object model controls, the *Label*. +
+
+Click on the Roundel for the *dotnet-basic* Application. In the right hand panel select *Details*. Scroll down to *Labels* and hit *Edit*. +
+
+If you look at the Labels you will see one for "app.kubernetes.io/part-of" with the value *group1-app*. This indicates to OpenShift to group this _deployment_ in that Application Group.
+====
+
+What we are going to do now, to show the Labels in action, is manually edit the *Deployment* for application1 to add it back into the Application Grouping.
+
+Click on the Roundel for *application1*. Select *Details*. Scroll down to *Labels* and click on *Edit*.
+
+With the cursor in the textarea for the labels (it should be in there by default, if not simply click on the textarea), add:
+
+[.console-input]
+[source,bash]
+----
+app.kubernetes.io/part-of=group1-app
+----
+
+Hit save and the topology will shift to include the Application in the group1-app Application Grouping.
+
+Now click on actual Application Grouping label (where it says (A) group1-app) and the Application group will highlight in the topology, and the Application Grouping information will be displayed in the righthand panel as shown below:
+
+image::005-image006.png[Highlighted Application Grouping,width=550px]
+
+Use of the topology allows for high level operations to be applied to all components of an Application Grouping - to finish we will now remove all the Application components for all the Applications in the grouping.
+
+Select the *Actions* pulldown in the group1-app details panel on the righthand side. Note that you can add directly to the Application Grouping here as well. Select *Delete Application*.
+
+image::005-image007.png[Confirmation of removal,width=450px]
+
+Note that it forces you to confirm by entering the Application Grouping name. Once you have entered the name in the textbox correctly the *Delete* button will become active. Click *Delete*.
+
+[TIP]
+====
+Note that the confirmation panel details *all* the application components that will be deleted. This approach is a clean delete that removes all the object components.
+====
+
+
+
+
+
+

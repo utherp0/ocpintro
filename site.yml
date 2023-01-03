@@ -1,0 +1,35 @@
+runtime:
+  cache_dir: ./.cache/antora
+
+site:
+  title: D2S OpenShift Training (Dev Mode)
+#  url: http://redhat-uk.github.io/student-bootcamp-2-day/  ---- Project on github.io, yet to be created
+  start_page: d2sdevex::index.adoc
+
+  url:
+  start_page: d2sdevex::index.adoc
+
+content:
+  sources:
+    - url: git@github.com:utherp0/.d2sdevexgit
+      tags: []
+      branches: []
+      start_path: documentation
+
+asciidoc:
+  attributes:
+    app-1: layer1
+    app-2: layer2
+    app-3: layer3
+  extensions:
+    - ./lib/tab-block.js
+    - ./lib/remote-include-processor.js
+
+#ui:
+#  bundle:
+#    url: https://github.com/redhat-scholars/course-ui/releases/download/v0.1.8/ui-bundle.zip
+#    snapshot: true
+#  supplemental_files: ./supplemental-ui
+
+output:
+  dir: ./d2sdevex

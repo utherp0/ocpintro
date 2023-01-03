@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>An Overview of the Modules :: Developer Introduction to OpenShift</title>
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () { 
+      const urlParams = new URLSearchParams(window.location.search);
+      const clusterName = urlParams.get('CLUSTER_SUBDOMAIN');
+      const projectName = urlParams.get('PROJECT');
+      if (clusterName) {
+        showCluster( clusterName );
+      }
+      else {
+        showClusterForm();
+      }
+
+      if (projectName) {
+        showProject( projectName );
+      } else {
+        showProjectForm();
+      }
+    } );
+
+
+    function sliceCluster(clusterName){
+      if (clusterName.length > 70) {
+          return "..." + clusterName.slice(35);
+      } else {
+          return clusterName;
+      }
+    }
+
+    function showCluster( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "none";
+      document.getElementById('navbar-form-filled').style.display = "flex";
+      document.getElementById('cluster_subdomain').textContent = sliceCluster(clusterName);
+      document.getElementById('clusterfield2').value = clusterName;
+
+    }
+
+    function showClusterForm( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "flex";
+      document.getElementById('navbar-form-filled').style.display = "none";
+    }
+
+    function gowithcluster() {
+      elClusterInput = document.getElementById('clusterfield');
+      elProjectInput = document.getElementById('projectfield2');
+
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+    function showProject( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "none";
+      document.getElementById('navbar-form-project-filled').style.display = "flex";
+      document.getElementById('project').textContent = projectName;
+      document.getElementById('projectfield2').value = projectName;
+    }
+
+    function showProjectForm( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "flex";
+      document.getElementById('navbar-form-project-filled').style.display = "none";
+    }
+
+    function gowithproject() {
+      elProjectInput = document.getElementById('projectfield');
+      elClusterInput = document.getElementById('clusterfield2');
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+  </script>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="../..">Developer Introduction to OpenShift</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item" id="navbar-form-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithcluster();">
+            <input size="40" id="clusterfield" type="text" placeholder="Enter Cluster Subdomain">
+            <input type="hidden" id="projectfield2" name="projectfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="cluster_subdomain"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+
+         <div class="navbar-item" id="navbar-form-project-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithproject();">
+            <input size="40" id="projectfield" type="text" placeholder="Enter Project Name">
+            <input type="hidden" id="clusterfield2" name="clusterfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-project-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="project"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+<!---
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+--->
+      </div>
+    </div>
+  </nav>
+</header><div class="body">
+<div class="nav-container" data-component="d2sdevex" data-version="4.11">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">D2S Introduction to OpenShift Course</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="000_module_overview.html"><strong>000</strong> - Module Overviews</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="001_introduction_to_openshift.html"><strong>001</strong> - A High Level Introduction to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="002_deploying_an_application.html"><strong>002</strong> - Deploying an Application to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="003_s2i.html"><strong>003</strong> - Deploying an Application from Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="004_configuring_an_application.html"><strong>004</strong> - Configuring an Application</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="005_deploying_multiple_applications.html"><strong>005</strong> - Deploying Multiple Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="006_config_injection.html"><strong>006</strong> - Injecting Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="007_secrets.html"><strong>007</strong> - Injecting Secure Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="008_storage.html"><strong>008</strong> - Adding Storage to Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="009_networking_applications.html"><strong>009</strong> - Understanding Application Networking</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="010_pipelines.html"><strong>010</strong> - Introducing Pipelines for Developers</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="100_glossary.html"><strong>Glossary</strong> - Terms used in the Modules</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">D2S Introduction to OpenShift Course</span>
+    <span class="version">4.11</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">D2S Introduction to OpenShift Course</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">4.11</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">D2S Introduction to OpenShift Course</a></li>
+    <li><a href="000_module_overview.html"><strong>000</strong> - Module Overviews</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/uther/git/d2s/documentation/modules/ROOT/pages/000_module_overview.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">An Overview of the Modules</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock right text-center">
+<div class="content">
+<img src="_images/d2s.png" alt="D2S Logo" width="190px">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/000-image001.png" alt="OpenShift">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2><strong>What the Modules cover</strong></h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>001 - A High Level Introduction to OpenShift</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will give you an overview of what OpenShift actually is, and how it works.</p>
+</div>
+<div class="paragraph">
+<p>This will involve explaining the Object model and Kubernetes. The Module is a non-interactive one and can be skipped if the Reader understands the basic concepts of Objects, Reconciliation, Eventually Consistent State and Containers/Pods.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>002 - Deploying an Application to OpenShift</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will introduce you to the concepts of <strong>Applications</strong> from the perspective of deploying them on OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>This application already exists as a Docker Image; this Module will walk you through the steps to execute it as an Application.</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will understand the concepts of an Application and how to instantiate one with OpenShift.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>003 - Deploying an Application from Source Code</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will introduce you to the concept of building Applications directly from Source Code rather than a pre-built Image</p>
+</div>
+<div class="paragraph">
+<p>This will highlight the functionality within OpenShift that guides you through the process</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will be able to build an Application from Source and understand what OpenShift is doing</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>004 - Configuring an Application</strong></p>
+</div>
+<div class="paragraph">
+<p>This module will introduce you to the configuration options for the Applications running within OpenShift</p>
+</div>
+<div class="paragraph">
+<p>This will highlight the components you can change and their effect</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will be able set various behaviours of the Application running in OpenShift, from the perspective of the way in which the Application is hosted</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>005 - Deploying Multiple Apps</strong></p>
+</div>
+<div class="paragraph">
+<p>This short module will introduce you to the concepts around deploying multiple Applications in the same Project</p>
+</div>
+<div class="paragraph">
+<p>This will highlight the capabilities in terms of grouping and also the nature of implicit Service Discovery provided by OpenShift between Applications running in the same Project</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will understand the concepts of multiple Application hosting and the advantages provided working within a single Project</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>006 - Injecting Configuration into Apps</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will introduce you to the concepts of Config Maps and Environment Variables being injected into active Pods</p>
+</div>
+<div class="paragraph">
+<p>This will highlight the functionality of changing Application behaviour without changing code and therefore the Image that is used for the Application. This allows for dependency injection to be used in Applications, and encourages the creation of Cloud Native behaviours.</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will understand how to create, manipulate and use Config Maps to inject runtime information into Applications in OpenShift</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>007 - Injecting Secure Configuration into Apps</strong></p>
+</div>
+<div class="paragraph">
+<p>This short Module will introduce the concepts known as 'Secrets' which allow for the injection of encrypted information into the Applications</p>
+</div>
+<div class="paragraph">
+<p>This will demonstrate the insertion of information that is secure to the Application, such as connection strings and passwords</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the difference between Config Maps and Secrets, the usecases for the latter and how to create and manipulate these secrets</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>008 - Adding Storage to Apps</strong></p>
+</div>
+<div class="paragraph">
+<p>The Module introduces the concepts of Persistent Storage, which gives Applications storage that exists and persists beyond the lifespan of the Pod running in OpenShift</p>
+</div>
+<div class="paragraph">
+<p>This will demonstrate the concept, usecases and constructs used to create, manipulate and retain storage for Applications</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the concepts of Persistent Storage with regard to Applications in OpenShift</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>009 - Understanding Application Networking</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will go into depth around the mechanisms for Networking of Applications within OpenShift. This will cover the Services, which are bound to the Project, Routes, which provide the external traffic connectivity and inter-Application networking. It will also explain Network Policies which allow for fine-grain control of traffic to a Service.</p>
+</div>
+<div class="paragraph">
+<p>The Module will include some practical examples of Networking using three distinct Services in the Project</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the nature of the abstracted SDN and the Service endpoints, how to setup Routes and what capabilities inter-Application Networking provides for Developers</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>010 - Introducing Pipelines for Developers</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will explain the basics of the Tekton Pipeline functionality within OpenShift from a developer&#8217;s perspective</p>
+</div>
+<div class="paragraph">
+<p>The Module will walk you through creating tasks and pipelines, executing those tasks and pipelines within OpenShift, and how to add persistent storage between tasks.</p>
+</div>
+<div class="paragraph">
+<p>It will also explain the theory behind Tasks and Pipelines to enable you to understand and exploit the concepts</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the capabilities of Tekton and be able to create Tasks and Pipelines</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

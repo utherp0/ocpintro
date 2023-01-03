@@ -1,0 +1,256 @@
+= Configuration and Dependency Injection
+:!sectids:
+
+image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+
+image::006-image001.png[Injecting Configuration into Applications]
+
+== *Injecting Runtime Configuration into Applications*
+
+====
+*What will you learn?*
+
+This Module will introduce you to the concepts of Config Maps and Environment Variables being injected into active Pods
+
+This will highlight the functionality of changing Application behaviour without changing code and therefore the Image that is used for the Application. This allows for dependency injection to be used in Applications, and encourages the creation of Cloud Native behaviours.
+
+After completing the Module you will understand how to create, manipulate and use Config Maps to inject runtime information into Applications in OpenShift
+====
+
+=== *Pre-Requisites*
+
+In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+
+[.console-input]
+[source,bash]
+----
+apps.ocp1.azure.dso.digital.mod.uk
+----
+
+[WARNING]
+====
+*Please Read* - if you are using a *shared* project you may encounter issues with naming; this is because Objects within a *Project* must be _uniquely_ named. If someone
+else is doing this course in the same Project they may have created objects with the names stated. +
+
+*If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating*
+====
+
+=== *Setting up an example Application for the module*
+
+First we will setup an example Application to show the use of the Config Maps and Environment variables. This Application is a Quarkus app with some RESTful endpoints for examining
+and searching the environment variables exposed to the Container.
+
+Make sure you are at the Developer Viewpoint and viewing the *Topology* page. Click *+Add* then *Import from Git*. In the Git repo textbox paste the value from below:
+
+[.console-input]
+[source,bash]
+----
+https://github.com/utherp0/envchecker
+----
+
+Set the *Application* (which is the Application Grouping) to *config-app* by selecting *Create Application* from the pulldown and entering config-app into the textbox. Leave the name as *envchecker*. Set the *Resource* type to generate to *DeploymentConfig*. Hit *Create* to start the build.
+
+Once the build has completed successfully the Application Roundel should appear as shown below:
+
+image::006-image002.png[Active Application,width=400px]
+
+=== *Testing the Application*
+
+Click on this link to test the application - https://envchecker-%PROJECT%.%CLUSTER_SUBDOMAIN%/envs/getall[role='params-link',window='_blank']
+
+The page that is generated will list all of the environment variables that are expressed into the Container. Leave this page up as we will use it going forward.
+
+[NOTE]
+====
+OpenShift and Kubernetes both support the injection of environment variables into the Containers they orchestrate via Pods. This is a brilliant feature as it allows you to push contextual information into the running Pod that _isn't part of the original Image_. +
+
+What this means in English is that you can craft applications that are driven by external configuration; for example setting a variable to indicate whether the Application runs in PROD or DEV. When you build your Application you don't need to define this external variable, just consume it (by reading the value of the Environment variable). +
+
+The Image that represents your Application is an immutable set of file differences; the state of the Application is therefore immutable when it is an Image. When the Pod is created OpenShift copies the file
+contents and executes them with an overlay file system that allows the Container to change them _but this is local to the Container_. If the Container shuts down and is recreated it is created from the 
+original immutable Image. +
+
+Dependency Injection allows you to change the way in which the Application executes at runtime _without having to change the image or recreate the Pod_.
+====
+
+[TIP]
+====
+One of the nice features of OpenShift is that it creates and exposes a number of environment variables by default - when you looked at the page for the Application it would have listed all the environment variables it can see. If you scanned them
+you would have seen a lot of OpenShift specifics including Service discovery information for the Application itself. +
+
+In fact if you have more then one Application running in your Project every Application will have environment variables injected into it relating to, for example,
+the service ports for all the other Applications. +
+
+*Real World Example* - say you are running a webserver Application and a Database Application; the webserver can use the environment variables that are automatically added into its Pod to connect directly to the Database Pod without having to do service discovery.
+====
+
+=== *Injecting Environment Variables using ConfigMaps*
+
+Click on *ConfigMaps* on the lefthand navigation panel. 
+
+[NOTE]
+====
+You will notice there are already a lot of configmaps in your project. OpenShift uses configmaps itself to pass contextual information into various components within the Project.
+====
+
+Click on *Create ConfigMap* on the top righthand side of the *ConfigMaps* panel.
+
+You can choose to manually edit the contents of the example ConfigMap it provides you, or simply copy the text below and overwrite the contents. 
+
+[.console-input]
+[source,bash]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testconfigmap
+data:
+  test_variable1: This is a test
+  test_variable2: Some more data
+  test_variable3: "2022"
+----
+
+Once the editor contains the text shown above click create.
+
+[TIP]
+====
+What we have done is create a ConfigMap object within the Project. This can then be attached to an Application using the Deployment/DeploymentConfig which will
+expose the data within the ConfigMap into the Application as environment variables.
+====
+
+Now we are going to look at the existing environment variables in the Application in two ways.
+
+Switch back to the tab that has the page we rendered earlier in it. Remove the */getall* from the end of the url and change it to */search?terms=test*. Load the page.
+
+[TIP]
+====
+The Application has an endpoint, at */envs/search*, which allows you to search for environment variables by substring of name; we have just searched for any environment variables with 'test' in the name (the search is case insensitive) and found none.
+====
+
+Now we are going to use another feature of OpenShift; we can actually shell directly into the Container itself to examine file systems and settings.
+
+[WARNING]
+====
+Due to security settings the ability to log directly into the Container is time bound; it may disconnect whilst you are working in it (it has a very short timeout defined). If it does simply follow the instructions to log back in and repeat the commands.
+====
+
+In the Topology page click on the Roundel for the envchecker Application. In the information panel click on *Resources*. In *Pods* click on the running Pod name.
+
+The details for the Pod will now be displayed and look similar to below:
+
+image::006-image003.png[Pod details page]
+
+Now click on the *Terminal* tab. This will pen a direct terminal into the running pod. Enter the follow command (cut and paste from below):
+
+[.console-input]
+[source,bash]
+----
+env | grep test
+----
+
+There will be no environment variables with the word 'test' in them.
+
+Switch back to the Topology page. On the righthand panel for the *DC envchecker* select the *Actions* menu and choose *Edit DeploymentConfig*.
+
+Scroll down to *Environment Variable*.
+
+[TIP]
+====
+Note that you have options to *Add value* and *Add from ConfigMap or Secret* - you can add environment variables directly into the DeploymentConfig without using a ConfigMap, but creating a ConfigMap allows you to have a consistent set of values _across many different Applications_.
+====
+
+Click on *Add from ConfigMap or Secret*.
+
+In the name textbox put *test1*. Click on *Select a Resource* and type *test* in the searchbox; it will find the testconfigmap (marked by *CM*). Click on *testconfigmap*. Click on the
+*Select a key* pulldown and select test_variable1.
+
+Click on *Add from ConfigMap or Secret* again. It will add an additional entry point.
+
+Repeat the process above but this time create a variable called *test2* and assign it to test_variable2 from the configmap testconfigmap.
+
+Remove the empty environment variable entry point above the configmap ones by simply pressing on the (minus) symbol next to it.
+
+Now click *Save*.
+
+[TIP]
+====
+You will be taken back to the Topology. If you are quick you'll see the Pod being recreated; because we have changed the state of the DeploymentConfig OpenShift will automatically
+recreate the Pod to match the new DeploymentConfig, which contains the new environment variables exposed from the ConfigMap.
+====
+
+Now if you switch back to the tab containing the lookup for the variables called 'test' and refresh the page you will now see that the Application has access to these environment variables.
+
+image::006-image004.png[Variables found,width=500px]
+
+[TIP]
+====
+Note that the *names* of the environment variables match the ones you entered as opposed to the names in the ConfigMap.
+====
+
+=== *Updating ConfigMaps and Applications that consume them*
+
+Click on the *ConfigMaps* navigation link on the lefthand panel. Type *test* into the searchbar next to the pulldown (the pulldown will already say *Name*. This will display the ConfigMap you created. Click on the ConfigMap name (*testconfigmap*).
+
+Click on *YAML*. In the *data* section change the value for test_variable1 to *This has now been changed*. Hit *Save*. Click on *Details* and scroll down to *Data*. Note that the data has been changed for that field. 
+
+Switch back to the tab containing the lookup and refresh.
+
+[TIP]
+====
+The environment variables expressed to the Application have *not* changed. This is correct; the DeploymentConfig is only applied when the data within it changes, and this is not done by changing the root configmap.
+====
+
+Click on *Topology* and in the *Actions* pulldown for the *DC* on the righthand side select *Start rollout*.
+
+[TIP]
+====
+This gets OpenShift to reload the DeploymentConfig. At this point the new environment variables will be applied.
+====
+
+Switch back to the tab containing the lookup and refresh.
+
+[WARNING]
+====
+If you change the values in a ConfigMap and save them they are not auto-applied to the _existing_ and _active_ deployments. The nature of Kubernetes and OpenShift is that you haven't
+changed the state of the DeploymentConfig so no update is required. Forcing a rollout makes OpenShift update the DeploymentConfig, which is then applied to the Application.
+====
+
+An interesting other-use of ConfigMaps is that the ConfigMaps can be applied as _files_; in this case the contents of the data component (the value rather than the key) are written into a file at a given point in the container. This is a very
+useful way of overwriting, say, a conf file. This is not a normal usecase but is supported.
+
+=== *Further Exercises*
+
+These are completely optional but give you a chance to explore the concepts of the Module.
+
+*Create a second application and inject all three of the variables from the ConfigMap into it*
+
+*Add an environment variable directly into the DeploymentConfig. After the Application has deployed, edit the DeploymentConfig and change the value. Compare the behaviour to changing values in a ConfigMap*
+
+*Tidy the Module up by deleting all the components*
+
+[TIP]
+====
+Any changes directly to the value of an environment variable applied from the DeploymentConfig get applied instantly; the change to a value in the DeploymentConfig is deemed to be a state change and the Application will be redeployed to match the required state.
+====
+
+=== Cleaning up
+
+[TIP]
+====
+When you create Applications in OpenShift they will remain resident until you remove them
+====
+
+To finish the Module head to the *Topology page*, click on each of the *Application Groups* (i.e. (A) config-app) and in the *Actions* menu on the righthand panel for the Application choose *Delete Application*.
+The system will prompt you to enter the name of the Application Group; enter this name and press return/hit *Delete*.
+
+[TIP]
+====
+Deleting the Application Group removes all of the Objects relating to the application
+====
+
+
+
+
