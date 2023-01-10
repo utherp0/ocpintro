@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Deploying Multiple Applications :: Developer Introduction to OpenShift</title>
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () { 
+      const urlParams = new URLSearchParams(window.location.search);
+      const clusterName = urlParams.get('CLUSTER_SUBDOMAIN');
+      const projectName = urlParams.get('PROJECT');
+      if (clusterName) {
+        showCluster( clusterName );
+      }
+      else {
+        showClusterForm();
+      }
+
+      if (projectName) {
+        showProject( projectName );
+      } else {
+        showProjectForm();
+      }
+    } );
+
+
+    function sliceCluster(clusterName){
+      if (clusterName.length > 70) {
+          return "..." + clusterName.slice(35);
+      } else {
+          return clusterName;
+      }
+    }
+
+    function showCluster( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "none";
+      document.getElementById('navbar-form-filled').style.display = "flex";
+      document.getElementById('cluster_subdomain').textContent = sliceCluster(clusterName);
+      document.getElementById('clusterfield2').value = clusterName;
+
+    }
+
+    function showClusterForm( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "flex";
+      document.getElementById('navbar-form-filled').style.display = "none";
+    }
+
+    function gowithcluster() {
+      elClusterInput = document.getElementById('clusterfield');
+      elProjectInput = document.getElementById('projectfield2');
+
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+    function showProject( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "none";
+      document.getElementById('navbar-form-project-filled').style.display = "flex";
+      document.getElementById('project').textContent = projectName;
+      document.getElementById('projectfield2').value = projectName;
+    }
+
+    function showProjectForm( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "flex";
+      document.getElementById('navbar-form-project-filled').style.display = "none";
+    }
+
+    function gowithproject() {
+      elProjectInput = document.getElementById('projectfield');
+      elClusterInput = document.getElementById('clusterfield2');
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+  </script>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="../..">Developer Introduction to OpenShift</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item" id="navbar-form-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithcluster();">
+            <input size="40" id="clusterfield" type="text" placeholder="Enter Cluster Subdomain">
+            <input type="hidden" id="projectfield2" name="projectfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="cluster_subdomain"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+
+         <div class="navbar-item" id="navbar-form-project-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithproject();">
+            <input size="40" id="projectfield" type="text" placeholder="Enter Project Name">
+            <input type="hidden" id="clusterfield2" name="clusterfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-project-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="project"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+<!---
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+--->
+      </div>
+    </div>
+  </nav>
+</header><div class="body">
+<div class="nav-container" data-component="ocpintro" data-version="4.11">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Introduction to OpenShift Course</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="000_module_overview.html"><strong>000</strong> - Module Overviews</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="001_introduction_to_openshift.html"><strong>001</strong> - A High Level Introduction to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="002_deploying_an_application.html"><strong>002</strong> - Deploying an Application to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="003_s2i.html"><strong>003</strong> - Deploying an Application from Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="004_configuring_an_application.html"><strong>004</strong> - Configuring an Application</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="005_deploying_multiple_applications.html"><strong>005</strong> - Deploying Multiple Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="006_config_injection.html"><strong>006</strong> - Injecting Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="007_secrets.html"><strong>007</strong> - Injecting Secure Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="008_storage.html"><strong>008</strong> - Adding Storage to Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="009_networking_applications.html"><strong>009</strong> - Understanding Application Networking</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="010_pipelines.html"><strong>010</strong> - Introducing Pipelines for Developers</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="100_glossary.html"><strong>Glossary</strong> - Terms used in the Modules</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Introduction to OpenShift Course</span>
+    <span class="version">4.11</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Introduction to OpenShift Course</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">4.11</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Introduction to OpenShift Course</a></li>
+    <li><a href="005_deploying_multiple_applications.html"><strong>005</strong> - Deploying Multiple Apps</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/uther/git/ocpintro/documentation/modules/ROOT/pages/005_deploying_multiple_applications.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Deploying Multiple Applications</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock right text-center">
+<div class="content">
+<img src="_images/d2s.png" alt="D2S Logo" width="190px">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image001.png" alt="Multiple Applications">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2><strong>Deploying Multiple Applications</strong></h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>What will you learn?</strong></p>
+</div>
+<div class="paragraph">
+<p>This short module will introduce you to the concepts around deploying multiple Applications in the same Project</p>
+</div>
+<div class="paragraph">
+<p>This will highlight the capabilities in terms of grouping and also the nature of implicit Service Discovery provided by OpenShift between Applications running in the same Project</p>
+</div>
+<div class="paragraph">
+<p>After completing the Module you will understand the concepts of multiple Application hosting and the advantages provided working within a single Project</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Pre-Requisites</strong></h3>
+<div class="paragraph">
+<p>In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.</strong> If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing <strong>RETURN</strong> after pasting it). Then add the Project name if it is not already there, again pressing <strong>RETURN</strong> after entering it into the field.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apps.ocp1.azure.dso.digital.mod.uk</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Please Read</strong> - if you are using a <strong>shared</strong> project you may encounter issues with naming; this is because Objects within a <strong>Project</strong> must be <em>uniquely</em> named. If someone
+else is doing this course in the same Project they may have created objects with the names stated.<br></p>
+</div>
+<div class="paragraph">
+<p><strong>If you get an error when trying to create <em>anything</em> as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Installing the multiple Applications</strong></h3>
+<div class="paragraph">
+<p>First we will install three Applications, two of which will be in the same Application Group.</p>
+</div>
+<div class="paragraph">
+<p>Ensure you have followed the pre-requisites above. Switch to the <strong>Topology</strong> viewpoint if you are not already on it.</p>
+</div>
+<div class="paragraph">
+<p>Select <strong>+Add</strong>. Choose <strong>Import from Git</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <strong>Import from Git</strong> option is a nice fast-track way of setting up an Application; OpenShift will verify the Git repository, examinine it, and auto-deduce which
+of the S2I (Source-2-Image) frameworks to use to build the Application. If there are multiple base framework images, i.e. if you choose Node.js there are a number of supported versions, the Wizard will
+prompt you to choose which one to use.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Copy the following location into the <strong>Git Repo URL</strong>:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">https://github.com/utherp0/bootcampapp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you add the text the Wizard will validate the URL and provide you with the 'Red Hat OpenJDK17 (UBI 8)' framework.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image002.png" alt="Automatic choice of framework" width="400px">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>We are going to create a JAVA Application using the OpenJDK framework; this executes a Maven build but interestingly the source code is
+actually <strong>Quarkus</strong>, a superb new spin of JAVA compilation that makes JAVA very fast to deploy with a smaller footprint.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Scroll down to <strong>Application</strong> and select <strong>Create Application</strong>. In the <strong>Application Name</strong> enter:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">group1-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Set the <strong>Name</strong> to:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">application1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Leave all other options as they are and hit <strong>Create</strong>. When the topology page appears click on the Roundel for <strong>Application1</strong>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Under the <strong>Pods</strong> part of the tab you will see a message saying <strong>'Waiting for the build'</strong>. OpenShift/Kubernetes works by reconciling the actual physical components created against the desired state and when OpenShift
+creates an application it creates <strong>both</strong> the BuildConfig, which builds the Application, and the Deployment/DeploymentConfig which deploys it.<br></p>
+</div>
+<div class="paragraph">
+<p>The Deployment will instantly try to create the Application, because that is the desired state it wants, but at this point the Build hasn&#8217;t completed so the composite Image, made
+up of the compiled source and the framework image, doesn&#8217;t exist, so you can get warning messages.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Select <strong>+Add</strong> again. This time we will add a sample application just to show the functionality you can use for quickstarting an Application development.</p>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Samples</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Basic .NET</strong>. Leave all the options as default and simply click on <strong>Create</strong>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that this option has far fewer parameters to choose from than a normal Application. That is because OpenShift sets up all the options you need specific to the Sample.<br></p>
+</div>
+<div class="paragraph">
+<p>Also note that the Application appears in an Application Grouping called <strong>sample-app</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Select <strong>+Add</strong> again. This time we will add an Application from a pre-built image.</p>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Container Images</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Copy the text below into the <strong>Image name from external registry</strong> field:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">quay.io/ilawson/functest</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the <strong>General</strong> tab pulldown the <strong>Application</strong> selection box and select <strong>group1-app</strong>. The <strong>Name</strong> should be autofilled with <strong>functest</strong>. Click on <strong>Create</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Your topology should now look something similar to this:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image003.png" alt="Three Applications" width="350px">
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that you have two application groupings. These are effectively cosmetic but very useful for keeping track of your applications in a combined component way.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Interacting with Application Groupings</strong></h3>
+<div class="paragraph">
+<p>Now we are going to add the <strong>dotnet-basic</strong> sample into our group1-app application grouping. Hold down the <strong>Shift</strong> button, click and hold on the Roundel for the dotnet-basic application, and drag it into the <strong>group1-app</strong> area (within the boundary). Release the mouse button.</p>
+</div>
+<div class="paragraph">
+<p>You will be prompted as to whether you want to move it - click <strong>Move</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image004.png" alt="Confirmation" width="450px">
+</div>
+</div>
+<div class="paragraph">
+<p>The topology page will now display a single Application Grouping with all three applications in it as shown below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image005.png" alt="Single Application grouping">
+</div>
+</div>
+<div class="paragraph">
+<p>Now hold the <strong>Shift</strong> key and select and hold on the Roundel for <strong>application1</strong>. Move it out of the group, release the button and hit <strong>Remove</strong>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In actuality this shows a powerful part of the OpenShift object model controls, the <strong>Label</strong>.<br></p>
+</div>
+<div class="paragraph">
+<p>Click on the Roundel for the <strong>dotnet-basic</strong> Application. In the right hand panel select <strong>Details</strong>. Scroll down to <strong>Labels</strong> and hit <strong>Edit</strong>.<br></p>
+</div>
+<div class="paragraph">
+<p>If you look at the Labels you will see one for "app.kubernetes.io/part-of" with the value <strong>group1-app</strong>. This indicates to OpenShift to group this <em>deployment</em> in that Application Group.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>What we are going to do now, to show the Labels in action, is manually edit the <strong>Deployment</strong> for application1 to add it back into the Application Grouping.</p>
+</div>
+<div class="paragraph">
+<p>Click on the Roundel for <strong>application1</strong>. Select <strong>Details</strong>. Scroll down to <strong>Labels</strong> and click on <strong>Edit</strong>.</p>
+</div>
+<div class="paragraph">
+<p>With the cursor in the textarea for the labels (it should be in there by default, if not simply click on the textarea), add:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">app.kubernetes.io/part-of=group1-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hit save and the topology will shift to include the Application in the group1-app Application Grouping.</p>
+</div>
+<div class="paragraph">
+<p>Now click on actual Application Grouping label (where it says (A) group1-app) and the Application group will highlight in the topology, and the Application Grouping information will be displayed in the righthand panel as shown below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image006.png" alt="Highlighted Application Grouping" width="550px">
+</div>
+</div>
+<div class="paragraph">
+<p>Use of the topology allows for high level operations to be applied to all components of an Application Grouping - to finish we will now remove all the Application components for all the Applications in the grouping.</p>
+</div>
+<div class="paragraph">
+<p>Select the <strong>Actions</strong> pulldown in the group1-app details panel on the righthand side. Note that you can add directly to the Application Grouping here as well. Select <strong>Delete Application</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/005-image007.png" alt="Confirmation of removal" width="450px">
+</div>
+</div>
+<div class="paragraph">
+<p>Note that it forces you to confirm by entering the Application Grouping name. Once you have entered the name in the textbox correctly the <strong>Delete</strong> button will become active. Click <strong>Delete</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that the confirmation panel details <strong>all</strong> the application components that will be deleted. This approach is a clean delete that removes all the object components.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

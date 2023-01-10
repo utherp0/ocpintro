@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Introducing Pipelines for Developers :: Developer Introduction to OpenShift</title>
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () { 
+      const urlParams = new URLSearchParams(window.location.search);
+      const clusterName = urlParams.get('CLUSTER_SUBDOMAIN');
+      const projectName = urlParams.get('PROJECT');
+      if (clusterName) {
+        showCluster( clusterName );
+      }
+      else {
+        showClusterForm();
+      }
+
+      if (projectName) {
+        showProject( projectName );
+      } else {
+        showProjectForm();
+      }
+    } );
+
+
+    function sliceCluster(clusterName){
+      if (clusterName.length > 70) {
+          return "..." + clusterName.slice(35);
+      } else {
+          return clusterName;
+      }
+    }
+
+    function showCluster( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "none";
+      document.getElementById('navbar-form-filled').style.display = "flex";
+      document.getElementById('cluster_subdomain').textContent = sliceCluster(clusterName);
+      document.getElementById('clusterfield2').value = clusterName;
+
+    }
+
+    function showClusterForm( clusterName ) {
+      document.getElementById('navbar-form-empty').style.display = "flex";
+      document.getElementById('navbar-form-filled').style.display = "none";
+    }
+
+    function gowithcluster() {
+      elClusterInput = document.getElementById('clusterfield');
+      elProjectInput = document.getElementById('projectfield2');
+
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+    function showProject( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "none";
+      document.getElementById('navbar-form-project-filled').style.display = "flex";
+      document.getElementById('project').textContent = projectName;
+      document.getElementById('projectfield2').value = projectName;
+    }
+
+    function showProjectForm( projectName ) {
+      document.getElementById('navbar-form-project-empty').style.display = "flex";
+      document.getElementById('navbar-form-project-filled').style.display = "none";
+    }
+
+    function gowithproject() {
+      elProjectInput = document.getElementById('projectfield');
+      elClusterInput = document.getElementById('clusterfield2');
+      window.location.search = ('&CLUSTER_SUBDOMAIN=' + elClusterInput.value + '&PROJECT=' + elProjectInput.value);
+    }
+
+  </script>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="../..">Developer Introduction to OpenShift</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item" id="navbar-form-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithcluster();">
+            <input size="40" id="clusterfield" type="text" placeholder="Enter Cluster Subdomain">
+            <input type="hidden" id="projectfield2" name="projectfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="cluster_subdomain"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+
+         <div class="navbar-item" id="navbar-form-project-empty">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i style="color: orange;"
+              class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+
+          <form action="javascript:void(0);" onsubmit="gowithproject();">
+            <input size="40" id="projectfield" type="text" placeholder="Enter Project Name">
+            <input type="hidden" id="clusterfield2" name="clusterfield2" value="">
+          </form>
+        </div>
+
+        <div class="navbar-item" id="navbar-form-project-filled" style="display: none;">
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">|</span>
+          <span class="navbar-text" id="project"></span>
+          <span class="navbar-text" style="margin-left: 1rem; margin-right: 1rem;">&nbsp;<i onclick="recycle();" style="color: green;" class="fa fa-recycle" aria-hidden="true"></i></span>
+        </div>
+<!---
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+--->
+      </div>
+    </div>
+  </nav>
+</header><div class="body">
+<div class="nav-container" data-component="ocpintro" data-version="4.11">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Introduction to OpenShift Course</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="000_module_overview.html"><strong>000</strong> - Module Overviews</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="001_introduction_to_openshift.html"><strong>001</strong> - A High Level Introduction to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="002_deploying_an_application.html"><strong>002</strong> - Deploying an Application to OpenShift</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="003_s2i.html"><strong>003</strong> - Deploying an Application from Source Code</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="004_configuring_an_application.html"><strong>004</strong> - Configuring an Application</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="005_deploying_multiple_applications.html"><strong>005</strong> - Deploying Multiple Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="006_config_injection.html"><strong>006</strong> - Injecting Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="007_secrets.html"><strong>007</strong> - Injecting Secure Configuration into Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="008_storage.html"><strong>008</strong> - Adding Storage to Apps</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="009_networking_applications.html"><strong>009</strong> - Understanding Application Networking</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="010_pipelines.html"><strong>010</strong> - Introducing Pipelines for Developers</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="100_glossary.html"><strong>Glossary</strong> - Terms used in the Modules</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Introduction to OpenShift Course</span>
+    <span class="version">4.11</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Introduction to OpenShift Course</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">4.11</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Introduction to OpenShift Course</a></li>
+    <li><a href="010_pipelines.html"><strong>010</strong> - Introducing Pipelines for Developers</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/uther/git/ocpintro/documentation/modules/ROOT/pages/010_pipelines.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Introducing Pipelines for Developers</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock right text-center">
+<div class="content">
+<img src="_images/d2s.png" alt="D2S Logo" width="190px">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image001.png" alt="Creating a Pipeline using the UI">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2><strong>Introducing Pipelines for Developers</strong></h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>What will you learn?</strong></p>
+</div>
+<div class="paragraph">
+<p>This Module will explain the basics of the Tekton Pipeline functionality within OpenShift from a developer&#8217;s perspective</p>
+</div>
+<div class="paragraph">
+<p>The Module will walk you through creating tasks and pipelines, executing those tasks and pipelines within OpenShift, and how to add persistent storage between tasks.</p>
+</div>
+<div class="paragraph">
+<p>It will also explain the theory behind Tasks and Pipelines to enable you to understand and exploit the concepts</p>
+</div>
+<div class="paragraph">
+<p>After completing this Module you will understand the capabilities of Tekton and be able to create Tasks and Pipelines</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>Pre-Requisites</strong></h3>
+<div class="paragraph">
+<p>In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.</strong> If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing <strong>RETURN</strong> after pasting it). Then add the Project name if it is not already there, again pressing <strong>RETURN</strong> after entering it into the field.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apps.ocp1.azure.dso.digital.mod.uk</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Please Read</strong> - if you are using a <strong>shared</strong> project you may encounter issues with naming; this is because Objects within a <strong>Project</strong> must be <em>uniquely</em> named. If someone
+else is doing this course in the same Project they may have created objects with the names stated.<br></p>
+</div>
+<div class="paragraph">
+<p><strong>If you get an error when trying to create <em>anything</em> as part of this module, add "__(your initials)" to the end of the Name attribute for the object
+you are creating</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3><strong>An overview of the basics; Tasks and Pipelines</strong></h3>
+<div class="paragraph">
+<p>Tekton provides a set of atomic components for creating extensive Pipeline functionality involving manipulating Objects within OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>That&#8217;s the official Kubernetes definition, but let&#8217;s take a step back and examine just what this functionality is actually for.</p>
+</div>
+</div>
+<div class="sect2">
+<h3>What is a <strong>Pipeline</strong>?</h3>
+<div class="paragraph">
+<p>In the old days writing software was a lot more of a chore. You had to write the software, work out how to compile it, link it, prepare it for production,
+ physically move it, set it up, the works. There were many manual steps in getting the software from A to B and those steps always introduced points at which
+ mistakes could be made.</p>
+</div>
+<div class="paragraph">
+<p>The concept of a Pipeline is simply a set of automated tasks that are executed in a prescribed order, with any of the tasks, if they fail, stopping the process. This technology was
+originally implemented in the <strong>Hudson</strong> and <strong>Jenkins</strong> products. In fact, OpenShift used <strong>Jenkins</strong> as its native pipeline technology in the previous release.</p>
+</div>
+<div class="paragraph">
+<p>The issue with using <strong>Jenkins</strong> is that it was fire-and-forget; the container orchestration platform would start the Pipeline and then be informed at the end
+as to whether or not the Pipeline had completed. Also, in order to interact with the platform, OpenShift had to provide an extended DSL to Jenkins, which made
+the provisioning of Pipelines a little bit of a black art.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>Tekton</strong> project extends the Kubernetes object model with components for the creation and execution of Pipelines <em>within the Cluster itself</em>. These Pipelines are executed as Containers (more on that in a moment)
+and are controlled within the Cluster.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>Pipelines</strong> themselves are just a set of <strong>Tasks</strong> that are executed in a defined order. The <strong>Task</strong> is the atomic component of the Pipeline and it can be made up of one or more <strong>steps</strong>. Each <strong>step</strong> is in actuality a Container.</p>
+</div>
+<div class="paragraph">
+<p>This is <strong>very</strong> powerful. Anything you can put in a Container can form a step of a task; in addition because the Cluster controls the execution of the steps and tasks it can influence and observe the Pipeline at all times.</p>
+</div>
+<div class="paragraph">
+<p>In fact you can build Pipelines with logic based on the behaviour of the steps themselves; imagine being able to build an automated process for build, test, deploy that can change its own
+behaviour <em>in flight</em> based on the results, or even the process consumption, of the steps within it.</p>
+</div>
+<div class="paragraph">
+<p>This observability and fine grain control is what makes <strong>Tekton</strong> such a powerful tool.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>There are actually four basic primitives within the 'Pipeline' concept provided on <strong>OpenShift</strong> via Tekton. You have definition (cookie-cutter) objects for Task and Pipeline, which define
+the behaviour of a task and the assembling of tasks for a pipeline, and then you have the temporal execution objects, <strong>TaskRun</strong> and <strong>PipelineRun</strong> which are actual runs of the objects; when you
+execute a Pipeline the system creates a PipelineRun which contains the outputs for all the TaskRuns. These act as temporally stamped immutable objects which are used for audit and historical reference</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3>Introducing <strong>Tasks</strong></h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For this part of the module we will be interacting with the information panel pertaining to <strong>Tasks</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Make sure you are at the <strong>Topology</strong> page of the UI. Choose <strong>Search</strong>, and then in the <strong>Resources</strong> pulldown type <strong>Task</strong>. Tick the search result for <strong>(T) Task</strong> and click on <strong>Add to navigation</strong> on the righthand side of the panel.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This will add a shortcut on the lefthand navigation bar for getting to the <strong>Tasks</strong> panel. If the shortcut does not immediately appear, refresh your browser page.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now click on <strong>Tasks</strong> in the lefthand navigation panel.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image002.png" alt="Tasks Panel" width="550px">
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to create the simplist of tasks; all of the examples we are going to use are simple just to show the mechanics of the Pipelines. In actuality when using Pipelines
+in production and devops the tasks will be entities such as 'Clone a Git Repo', 'Compile the code', 'Perform code analysis'.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>OpenShift</strong> Pipelines ships with a set of archetypal tasks that can be easily combined into powerful Pipelines. If you perform a search, as you did to find <strong>Tasks</strong>, but in this case search
+for <strong>ClusterTask</strong> you can examine the ones that are installed in the Cluster. When you build Pipelines you can use these; also note that these tasks normally come with
+a number of parameters you have to provide, such as the Git repo for the <strong>Clone Git</strong> task.<br></p>
+</div>
+<div class="paragraph">
+<p>Using the ClusterTask panel you can examine these. Shown below is an extract of the params component of the Git Clone task.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image003.png" alt="Git Clone Task" width="550px">
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to create a very simple task that has two steps. Click on <strong>Tasks</strong>. Click on <strong>Create Task</strong> in the top right of the panel.</p>
+</div>
+<div class="paragraph">
+<p>Delete the contents of the YAML editor and replace it with this:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask1
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 1"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hit <strong>Create</strong>. The system will create the task and take you to the <strong>Task</strong> overview page.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>What we have done is create a cookie-cutter for creating a task. The task consists of two steps; the first step uses the latest UBI8 (RHEL8 Universal Base Image), is called <strong>id</strong> and
+simply calls the <strong>cat</strong> command with the parameters <strong>/etc/redhat-release</strong>. The second step, called <strong>echo</strong>, calls the command <strong>echo</strong> with the parameter <strong>"In task1"</strong>, again using the
+latest RHEL8 UBI.</p>
+</div>
+<div class="paragraph">
+<p>In actuality you have as many steps using as many different images as you like. This example is a simple atomic unit that executes two Containers in series with the appropriate commands</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Again, as we said, this is a template for executing the task so we haven&#8217;t executed anything, just provided the rules.</p>
+</div>
+<div class="paragraph">
+<p>To test the task we will create a simple pipeline using the UI. <strong>Pipelines</strong> is already an element in the lefthand menu, so click on <strong>Pipelines</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Create Pipeline</strong>. This will take you to the <strong>Pipeline builder</strong> page. Note that you can either create a pipeline using the graphical tools or, as with any object
+in OpenShift, simply give it the YAML. In this case we will use the graphical interface to quickly create a single task pipeline using the task we just created.</p>
+</div>
+<div class="paragraph">
+<p>Change the <strong>Name</strong> to <strong>example-pipeline1</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Click on <strong>Add Task</strong>. In the pop-up box type <strong>ctask1</strong> (the name of the task we just created). The system will show the task; click on <strong>Add</strong>. Leave everything else
+as it is and hit <strong>Create</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image004.png" alt="Created pipeline" width="600px">
+</div>
+</div>
+<div class="paragraph">
+<p>Again, as with the Task, we have created a template for running this Pipeline. The Pipeline consists of one task, which has two steps. Pull down the <strong>Actions</strong> pulldown and hit <strong>Start</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The pipeline will now execute. Note the icon shows <strong>two</strong> distinct steps within the task. When the pipeline completes there will be a green arrow next to the Task (with multiple tasks this gives a clear indication of success or failure for each task). If you now
+click directly on the Pipeline icon it will display a list of Tasks (in this case, just the one) with the logs from that task (as shown below).</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image005.png" alt="Successful log of task" width="600px">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3>Combining Multiple Tasks in a Pipeline</h3>
+<div class="paragraph">
+<p>For this part of the exercise we are going to create two additional tasks. Click on <strong>Tasks</strong> in the lefthand panel and using <strong>Create Task</strong> add the two following tasks:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask2
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 2"</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ctask3
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      command:
+        - echo
+      args:
+        - "In task 3"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will now create a Pipeline, but instead of using the <strong>builder</strong> we will do it via YAML. Click on <strong>Pipelines</strong> on the lefthand panel, then <strong>Create Pipeline</strong>. Switch to <strong>YAML</strong> view and replace the text in the <strong>YAML</strong> editor with:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cpipeline1
+spec:
+  tasks:
+    - name: task1
+      taskRef:
+        kind: Task
+        name: ctask1
+    - name: task2
+      taskRef:
+        kind: Task
+        name: ctask2
+    - name: task3
+      taskRef:
+        kind: Task
+        name: ctask3
+      runAfter:
+        - task1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click <strong>Save</strong> and then execute the Pipeline using the <strong>Actions</strong> then <strong>Start</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The syntax within a Pipeline definition is very simple; you define the set of tasks simply by providing them with a name, within the Pipeline, and a reference
+to a preloaded task name. In this case our tasks are called ctaskx, and the tasks in the Pipeline are called taskx. Also the Pipeline allows for order definition.<br></p>
+</div>
+<div class="paragraph">
+<p>In this case we have said run task1 and task2 independently and then run task3 after task1 has completed.<br></p>
+</div>
+<div class="paragraph">
+<p>Also note that the task3 uses a later (RHEL9) version of the base image. Check the logs to see what it reports as its version.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image006.png" alt="Successful run" width="600px">
+</div>
+</div>
+<div class="paragraph">
+<p>By abstracting the atomic task behaviour into separate tasks and then having the <strong>Pipeline</strong> control the ordering of the tasks there is a nice distinction between the functionality. However the tasks are physically different and behave
+like individual, transient containers. Persistence of information between tasks is done using <strong>Workspaces</strong> which provide, again, an abstracted
+approach to Pipeline technology.</p>
+</div>
+</div>
+<div class="sect2">
+<h3>Persisting data between Tasks</h3>
+<div class="paragraph">
+<p>We are going to create another pithy example here - in this case we are going to create three tasks, the first of which creates a file, the second checks it exists and the third deletes it.</p>
+</div>
+<div class="paragraph">
+<p>If we were just using Tasks the second task would fail; when the first task completes the Container is removed and all changes it made to the Container image would be lost.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This isn&#8217;t the case when you use <strong>steps</strong> that are the same Image; for efficiency a Task will reuse the file system of an Image across steps.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For this example we will create three new tasks. Using the <strong>Tasks</strong> menu item on the lefthand panel, <strong>Create Task</strong>, replace the YAML and create each of the following:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifilecreate
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Creating the file in the workspace"
+    - name: createfile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - touch
+      args:
+        - "/d2s/test.txt"
+  workspaces:
+    - name: working
+      mountPath: /d2s</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note the addition of a <strong>workspaces</strong> component. This maps an externally defined piece of storage, named <strong>working</strong>, to the path <strong>/d2s</strong> in the containers for <strong>all</strong> steps.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifilecheck
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Checking the file has been created in the workspace"
+    - name: checkfile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/bin/env bash
+        ls -alZ /d2s/test.txt
+  workspaces:
+    - name: working
+      mountPath: /d2s</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ubifileremove
+spec:
+  steps:
+    - name: id
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - cat
+      args:
+        - /etc/redhat-release
+    - name: echo
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      command:
+        - echo
+      args:
+        - "Removing the file from the workspace"
+    - name: removefile
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/bin/env bash
+        rm /d2s/test.txt
+  workspaces:
+    - name: working
+      mountPath: /d2s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have three new tasks we can create a Pipeline to use them. Click on <strong>Pipelines</strong> on the lefthand panel. Click on <strong>Create Pipeline</strong>. Switch to <strong>YAML view</strong> if it isn&#8217;t already on there. Replace the code with the following:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ubifilepipeline
+spec:
+  tasks:
+    - name: create
+      taskRef:
+        kind: task
+        name: ubifilecreate
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+    - name: check
+      taskRef:
+        kind: task
+        name: ubifilecheck
+      runAfter:
+        - create
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+    - name: remove
+      taskRef:
+        kind: task
+        name: ubifileremove
+      runAfter:
+        - check
+      workspaces:
+        - name: working
+          workspace: workingworkspace
+  workspaces:
+    - name: workingworkspace</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that we provide a <strong>workspace</strong> to every task defined in the Pipeline (by creating an abstract workspace, called <strong>workingworkspace</strong>, and attaching it by name to the tasks using
+the name we used in the <strong>Task</strong> definition.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Hit <strong>Create</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image007.png" alt="File Pipeline">
+</div>
+</div>
+<div class="paragraph">
+<p>Now in order to run the Pipeline with persisted storage we need to create some for it. Switch to the <strong>Administrator</strong> viewpoint, click on <strong>Storage</strong>, click on <strong>PersistentVolumeClaims</strong> then <strong>Create PersistentVolumeClaim</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Set the <strong>PersistentVolumeClaim name</strong> to <strong>pipeline-pvc</strong>. Set the <strong>Size</strong> to <strong>1 GB</strong>. Hit <strong>Create</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Switch back to the <strong>Developer</strong> viewpoint. Click on <strong>Pipelines</strong>. Click on <strong>(PL) ubifilepipeline</strong>. Pulldown the <strong>Actions</strong> pulldown and select <strong>Start</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The Pipeline defines that it needs a workspace but the definition we provided didn&#8217;t state what it was. The OpenShift UI automatically prompts you to choose how you will
+provide the workspace. We have created a PVC to provide persisted storage</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Click on the pulldown for the <strong>workingworkspace</strong> workspace. Select <strong>PersistentVolumeClaim</strong>. A <strong>PVC</strong> pulldown will appear; click on this and it should list the
+PVC we just created. Click on that to select it. Hit <strong>Start</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The Pipeline should progress through successfully. Have a look at the logs and make sure each has performed correctly; each task has three steps, firstly to inform what version of RHEL the container is, secondly to echo the stage name, and thirdly to perform the action.<br></p>
+</div>
+<div class="paragraph">
+<p>The tasks will create, check and delete a file on the shared storage</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/010-image008.png" alt="Pipeline PVC" width="600px">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3>Cleaning up</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When you create Objects in OpenShift they will remain resident until you remove them</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To finish the Module head to the <strong>Topology page</strong>, go to the <strong>Pipelines</strong> panel and delete all the Pipelines there. Then go to the <strong>Tasks</strong> panel and remove the tasks you created.</p>
+</div>
+</div>
+</div>
+</div>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
