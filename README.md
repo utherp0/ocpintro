@@ -1,6 +1,6 @@
-# D2SDEVEX
+# OCP Introduction course for developers
 
-Deployable self-paced tutorial material for onboarding developers to D2S
+Deployable self-paced tutorial material for onboarding developers to OpenShift
 
 # Precis
 This project provides a build and deployable self-paced web-based course for getting people up to speed with the concepts of developing and deploying on OpenShift.  
@@ -16,3 +16,8 @@ This project provides a build and deployable self-paced web-based course for get
 8. Networking of Applications
 9. CI using Pipelines
 10. CD using GitOps (future)
+
+# Installing the App
+Create an httpd S2I from the Builder Image in OpenShift
+Use this repo as the source 
+When it has finished add /ocpintro to the generated route to start the course in a browser
