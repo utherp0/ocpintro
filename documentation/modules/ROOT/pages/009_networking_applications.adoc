@@ -182,10 +182,102 @@ You should see the HTML output of the *application3* application via the *applic
 If you have multiple Projects in OpenShift you can communicate between them using this method. 
 ====
 
+=== *Introducing Network Policies*
 
+In addition to the *routes* and *Services* OpenShift also provides another important object with regard to Networking - the *Network Policy*.
 
+This object allows you, assuming your Cluster gives you access, to create, delete and maintain objects that control in a fine-grain way the access to the Services in your project.
 
+Using a combination of rules you can specify exactly what can and cannot interact with your Services. 
 
+To start, we will add the Network Policy shortcut to the navigation panel. Click on *Search*. Click on *Resources*. Type *NetworkPolicy*. Click on the box next to (NP) NetworkPolicy. Click on *Add to navigation*
+on the righthand side of the panel. 
+
+Now click on *NetworkPolicies*.
+
+[TIP]
+====
+At this point you may have existing Network Policies in your project. For the sake of this exercise we are going to delete them. +
+
+Network Policies work in a linear fashion; if you have, for example, a policy defined that says 'everything can access all services in your namespace', this will overwrite any we add
+so to demonstrate the principles we are going to start with an empty set. +
+
+For each of the Network Policies that exist, if any, click on the 'kebab' (the three vertically arranged dots at the far right of the Policy listing) and select
+*Delete Network Policy*. When prompted for confirmation click 'Delete'.
+====
+
+[WARNING]
+====
+The Cluster you are using may be setup with stricter security disallowing you from deleting Network Policies. If so simply read the rest of the Module for information before following the tidy-up steps.
+====
+
+We have three Applications running in our project. What we are going to do is restrict access to application1; we are going to produce a Network Policy that allows traffic in
+only from application2.
+
+To do this click on *Create NetworkPolicy*.
+
+[TIP]
+====
+The creation of Network Policies is provided via two mechanisms; you can use the *Form view* to build the rules in a wizard fashion, or enter YAML as with all Objects. For the
+sake of this exercise we will use the *YAML View*.
+====
+
+Switch the view to *YAML View* by clicking on the appropriate radio button in the *Configure via:* tab.
+
+Clear the contents of the YAML editor and replace with the following:
+
+[.console-input]
+[source,bash]
+----
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allowapplication2
+spec:
+  podSelector:
+    matchLabels:
+      app: application1
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: application2
+  policyTypes:
+    - Ingress
+----
+
+[TIP]
+====
+In English what this Policy is stating is: +
+
+For all Pods with a label of *"app: application1"* only allow ingress from Pods with a label of *"app: application2"*
+====
+
+We will now shows this in action. Click on *Topology*. Click on the *application2* roundel. In the righthand panel click on the active Pod (the name). When the Pod overview
+page appears click on *Terminal*. In the Terminal type:
+
+[.console-input]
+[source,bash]
+----
+curl http://application1:8080
+----
+
+You should see the response webpage source displayed. Now click on *Topology* again. Click on the *application3* roundel. In the righthand panel click on the active Pod (the name). When the Pod
+overview appears click on *Terminal*. Again, type the following in the Terminal:
+
+[.console-input]
+[source,bash]
+----
+curl http://application1:8080
+----
+
+This time the terminal will hang; the Pod cannot connect to that service endpoint.
+
+This was a very simple example; the capabilities of the Network Policies are very powerful. One of the nice features of the OpenShift Ux is the YAML view on creation of
+a Network Policy provides some useful archetypes; if you switch the righthand panel to 'Samples' you can download example YAML or even use 'Try it' which will provide the YAML
+directly into the Editor. 
+
+image::009-image004.png[Example Network Policies,width=400px]
 
 === Cleaning up
 

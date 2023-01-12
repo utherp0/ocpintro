@@ -545,6 +545,156 @@ from where you are in the instructions.</p>
 </div>
 </div>
 <div class="sect2">
+<h3><strong>Introducing Network Policies</strong></h3>
+<div class="paragraph">
+<p>In addition to the <strong>routes</strong> and <strong>Services</strong> OpenShift also provides another important object with regard to Networking - the <strong>Network Policy</strong>.</p>
+</div>
+<div class="paragraph">
+<p>This object allows you, assuming your Cluster gives you access, to create, delete and maintain objects that control in a fine-grain way the access to the Services in your project.</p>
+</div>
+<div class="paragraph">
+<p>Using a combination of rules you can specify exactly what can and cannot interact with your Services.</p>
+</div>
+<div class="paragraph">
+<p>To start, we will add the Network Policy shortcut to the navigation panel. Click on <strong>Search</strong>. Click on <strong>Resources</strong>. Type <strong>NetworkPolicy</strong>. Click on the box next to (NP) NetworkPolicy. Click on <strong>Add to navigation</strong>
+on the righthand side of the panel.</p>
+</div>
+<div class="paragraph">
+<p>Now click on <strong>NetworkPolicies</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>At this point you may have existing Network Policies in your project. For the sake of this exercise we are going to delete them.<br></p>
+</div>
+<div class="paragraph">
+<p>Network Policies work in a linear fashion; if you have, for example, a policy defined that says 'everything can access all services in your namespace', this will overwrite any we add
+so to demonstrate the principles we are going to start with an empty set.<br></p>
+</div>
+<div class="paragraph">
+<p>For each of the Network Policies that exist, if any, click on the 'kebab' (the three vertically arranged dots at the far right of the Policy listing) and select
+<strong>Delete Network Policy</strong>. When prompted for confirmation click 'Delete'.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The Cluster you are using may be setup with stricter security disallowing you from deleting Network Policies. If so simply read the rest of the Module for information before following the tidy-up steps.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We have three Applications running in our project. What we are going to do is restrict access to application1; we are going to produce a Network Policy that allows traffic in
+only from application2.</p>
+</div>
+<div class="paragraph">
+<p>To do this click on <strong>Create NetworkPolicy</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The creation of Network Policies is provided via two mechanisms; you can use the <strong>Form view</strong> to build the rules in a wizard fashion, or enter YAML as with all Objects. For the
+sake of this exercise we will use the <strong>YAML View</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Switch the view to <strong>YAML View</strong> by clicking on the appropriate radio button in the <strong>Configure via:</strong> tab.</p>
+</div>
+<div class="paragraph">
+<p>Clear the contents of the YAML editor and replace with the following:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allowapplication2
+spec:
+  podSelector:
+    matchLabels:
+      app: application1
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: application2
+  policyTypes:
+    - Ingress</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In English what this Policy is stating is:<br></p>
+</div>
+<div class="paragraph">
+<p>For all Pods with a label of <strong>"app: application1"</strong> only allow ingress from Pods with a label of <strong>"app: application2"</strong></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We will now shows this in action. Click on <strong>Topology</strong>. Click on the <strong>application2</strong> roundel. In the righthand panel click on the active Pod (the name). When the Pod overview
+page appears click on <strong>Terminal</strong>. In the Terminal type:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://application1:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the response webpage source displayed. Now click on <strong>Topology</strong> again. Click on the <strong>application3</strong> roundel. In the righthand panel click on the active Pod (the name). When the Pod
+overview appears click on <strong>Terminal</strong>. Again, type the following in the Terminal:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl http://application1:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This time the terminal will hang; the Pod cannot connect to that service endpoint.</p>
+</div>
+<div class="paragraph">
+<p>This was a very simple example; the capabilities of the Network Policies are very powerful. One of the nice features of the OpenShift Ux is the YAML view on creation of
+a Network Policy provides some useful archetypes; if you switch the righthand panel to 'Samples' you can download example YAML or even use 'Try it' which will provide the YAML
+directly into the Editor.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/009-image004.png" alt="Example Network Policies" width="400px">
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3>Cleaning up</h3>
 <div class="admonitionblock tip">
 <table>
