@@ -1,8 +1,6 @@
 = Adding Persistent Storage to Applications
 :!sectids:
 
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
-
 image::008-image001.png[Setting up Storage]
 
 == *Adding Persistent Storage to Applications*
@@ -19,15 +17,15 @@ After completing this Module you will understand the concepts of Persistent Stor
 
 === *Pre-Requisites*
 
-In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+In order to undertake the Module you need to be logged onto the OpenShift cluster and have access to a Project. If you do not have rights to create a project, ask the Cluster administrators to provide one for you.
 
-*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the Cluster address and the Project you will be using.* 
 
-[.console-input]
-[source,bash]
-----
-apps.ocp1.azure.dso.digital.mod.uk
-----
+[NOTE]
+====
+A *Project* is an OpenShift object that contains all of your Applications and other components in a compartmented way. +
+As the owner/user of a Project you have 'Admin' rights to it, meaning you can create any of the OpenShift objects that you have the rights to create within it.  
+====
 
 [WARNING]
 ====
@@ -149,7 +147,7 @@ In the *Mount path* copy the text from below:
 [.console-input]
 [source,bash]
 ----
-/d2s/test
+/ocpintro/test
 ----
 
 When you hit *Save* the *DC* will be displayed and the Application will be re-deployed. Watch the process, and then when the new version has completed click on the *Pods* tab on the *DC* panel.
@@ -171,7 +169,7 @@ In the Terminal apply the following commands:
 [source,bash]
 ----
 df -h
-cd /d2s/test
+cd /ocpintro/test
 touch test.txt
 ls -al
 ----
@@ -182,7 +180,7 @@ image::008-image005.png[Terminal Output,width=550px]
 
 [TIP]
 ====
-By doing *df -h* you display the current file devices attached to the container; note the addition of one for */d2s/test*.
+By doing *df -h* you display the current file devices attached to the container; note the addition of one for */ocpintro/test*.
 
 We have then created a file (albeit a 0 length file) using *touch* and done a directory listing to see it there.
 ====
@@ -217,7 +215,7 @@ Click on the *Resources* tab in the *DC* panel and click on the single active *P
 [.console-input]
 [source,bash]
 ----
-cd /d2s/test
+cd /ocpintro/test
 ls -al
 ----
 

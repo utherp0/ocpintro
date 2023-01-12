@@ -1,8 +1,6 @@
 = Deploying Multiple Applications
 :!sectids:
 
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
-
 image::005-image001.png[Multiple Applications]
 
 == *Deploying Multiple Applications*
@@ -19,15 +17,15 @@ After completing the Module you will understand the concepts of multiple Applica
 
 === *Pre-Requisites*
 
-In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+In order to undertake the Module you need to be logged onto the OpenShift cluster and have access to a Project. If you do not have rights to create a project, ask the Cluster administrators to provide one for you.
 
-*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the Cluster address and the Project you will be using.* 
 
-[.console-input]
-[source,bash]
-----
-apps.ocp1.azure.dso.digital.mod.uk
-----
+[NOTE]
+====
+A *Project* is an OpenShift object that contains all of your Applications and other components in a compartmented way. +
+As the owner/user of a Project you have 'Admin' rights to it, meaning you can create any of the OpenShift objects that you have the rights to create within it.  
+====
 
 [WARNING]
 ====

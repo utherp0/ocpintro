@@ -1,7 +1,5 @@
 = High Level Introduction to OpenShift
 
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
-
 :!sectids:
 
 image::001-image001.png[OpenShift]

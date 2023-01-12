@@ -2,8 +2,6 @@
 
 :!sectids:
 
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
-
 image::002-image001.png[Example Topology Image]
 
 == *Deploying an Application to OpenShift*
@@ -20,15 +18,9 @@ After completing the Module you will understand the concepts of an Application a
 
 === *Pre-Requisites*
 
-In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+In order to undertake the Module you need to be logged onto the OpenShift cluster and have access to a Project. If you do not have rights to create a project, ask the Cluster administrators to provide one for you.
 
-*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
-
-[.console-input]
-[source,bash]
-----
-apps.ocp1.azure.dso.digital.mod.uk
-----
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the Cluster address and the Project you will be using.* 
 
 [NOTE]
 ====
@@ -51,7 +43,7 @@ OpenShift provides two *viewpoints* within the User Interface. The first is *Adm
 
 The second is the *Developer* viewpoint, which we will use extensively during this Module.
 
-If you haven't already logged on, log on to the D2S cluster at:
+If you haven't already logged on, log on to the cluster you will be using at:
 
 https://console-openshift-console.%CLUSTER_SUBDOMAIN%[role='params-link',window='_blank']
 
@@ -132,7 +124,7 @@ The OpenShift UI will now take you to the topology to show your Application bein
 
 image::002-image002.png[Application Loading,width=300px]
 
-You now have an Application active on D2S. Click on the Roundel itself and the topology page should look very similar to this:
+You now have an Application active on OpenShift. Click on the Roundel itself and the topology page should look very similar to this:
 
 image::002-image003.png[Topology View]
 
@@ -172,7 +164,7 @@ image::002-image004.png[The Running Application]
 
 [TIP]
 ====
-You can interact directly with OpenShift using the 'oc' command line tool as well. Normally this requires you to install this locally; instructions would have been provided by the D2S team. +
+You can interact directly with OpenShift using the 'oc' command line tool as well. The CLI can be installed by clicking on the (?) at the top of the Ux and selecting 'Command Line Tools'. +
 Put simply the 'oc' command gives you create, read, update and delete access to all the Objects you own in the Projects you can access. You can do anything using 'oc' that you can do using the UI, the UI is an opinionated, easy to use wrapper around the same OpenShift RESTful calls that are done through the command line.
 ====
 

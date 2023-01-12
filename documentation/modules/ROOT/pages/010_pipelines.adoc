@@ -1,8 +1,6 @@
 = Introducing Pipelines for Developers
 :!sectids:
 
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
-
 image::010-image001.png[Creating a Pipeline using the UI]
 
 == *Introducing Pipelines for Developers*
@@ -21,15 +19,15 @@ After completing this Module you will understand the capabilities of Tekton and 
 
 === *Pre-Requisites*
 
-In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.
+In order to undertake the Module you need to be logged onto the OpenShift cluster and have access to a Project. If you do not have rights to create a project, ask the Cluster administrators to provide one for you.
 
-*Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.* If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing *RETURN* after pasting it). Then add the Project name if it is not already there, again pressing *RETURN* after entering it into the field.
+*Ensure the two textboxes at the top of this HTML Guide to the Module contain the Cluster address and the Project you will be using.* 
 
-[.console-input]
-[source,bash]
-----
-apps.ocp1.azure.dso.digital.mod.uk
-----
+[NOTE]
+====
+A *Project* is an OpenShift object that contains all of your Applications and other components in a compartmented way. +
+As the owner/user of a Project you have 'Admin' rights to it, meaning you can create any of the OpenShift objects that you have the rights to create within it.  
+====
 
 [WARNING]
 ====
@@ -38,6 +36,12 @@ else is doing this course in the same Project they may have created objects with
 
 *If you get an error when trying to create _anything_ as part of this module, add "__(your initials)" to the end of the Name attribute for the object
 you are creating*
+====
+
+[WARNING]
+====
+This module requires that the Pipelines Operator has been installed on the CLuster you are using. If you have no 'Pipelines' navigation bar option then this hasn't been done; contact the
+administrators for your cluster and check to see if the Operator has been added or not.
 ====
 
 === *An overview of the basics; Tasks and Pipelines*
@@ -303,15 +307,15 @@ spec:
       command:
         - touch
       args:
-        - "/d2s/test.txt"
+        - "/ocpintro/test.txt"
   workspaces:
     - name: working
-      mountPath: /d2s
+      mountPath: /ocpintro
 ----
 
 [TIP]
 ====
-Note the addition of a *workspaces* component. This maps an externally defined piece of storage, named *working*, to the path */d2s* in the containers for *all* steps.
+Note the addition of a *workspaces* component. This maps an externally defined piece of storage, named *working*, to the path */ocpintro* in the containers for *all* steps.
 ====
 
 [.console-input]
@@ -339,10 +343,10 @@ spec:
       image: registry.access.redhat.com/ubi8/ubi:latest
       script: |
         #!/usr/bin/env bash
-        ls -alZ /d2s/test.txt
+        ls -alZ /ocpintro/test.txt
   workspaces:
     - name: working
-      mountPath: /d2s
+      mountPath: /ocpintro
 ----
 
 [.console-input]
@@ -370,10 +374,10 @@ spec:
       image: registry.access.redhat.com/ubi8/ubi:latest
       script: |
         #!/usr/bin/env bash
-        rm /d2s/test.txt
+        rm /ocpintro/test.txt
   workspaces:
     - name: working
-      mountPath: /d2s
+      mountPath: /ocpintro
 ----
 
 Now we have three new tasks we can create a Pipeline to use them. Click on *Pipelines* on the lefthand panel. Click on *Create Pipeline*. Switch to *YAML view* if it isn't already on there. Replace the code with the following:

@@ -1,5 +1,5 @@
-name: d2sdevex
-title: D2S Introduction to OpenShift Course
+name: ocpintro
+title: Introduction to OpenShift Course
 version: 4.11
 nav:
   - modules/ROOT/nav.adoc

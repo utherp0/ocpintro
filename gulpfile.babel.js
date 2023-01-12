@@ -28,7 +28,7 @@ function watchGlobs() {
 
 const siteWatch = () => watch(watchGlobs(), series(build, reload));
 
-const removeSite = done => remove("d2sdevex", done);
+const removeSite = done => remove("ocpintro", done);
 const removeCache = done => remove(".cache", done);
 
 function build(done) {
@@ -61,7 +61,7 @@ function reload(done) {
 function serve(done) {
   server.init({
     server: {
-      baseDir: "./d2sdevex"
+      baseDir: "./ocpintro"
     }
   });
   done();

@@ -226,11 +226,6 @@
 <h1 class="page">Deploying an Application</h1>
 <div id="preamble">
 <div class="sectionbody">
-<div class="imageblock right text-center">
-<div class="content">
-<img src="_images/d2s.png" alt="D2S Logo" width="190px">
-</div>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="_images/002-image001.png" alt="Example Topology Image">
@@ -260,15 +255,10 @@
 <div class="sect2">
 <h3><strong>Pre-Requisites</strong></h3>
 <div class="paragraph">
-<p>In order to undertake the Module you need to be logged onto the D2S cluster and have access to a Project. This Project is pre-created for you by the D2S Admins.</p>
+<p>In order to undertake the Module you need to be logged onto the OpenShift cluster and have access to a Project. If you do not have rights to create a project, ask the Cluster administrators to provide one for you.</p>
 </div>
 <div class="paragraph">
-<p><strong>Ensure the two textboxes at the top of this HTML Guide to the Module contain the D2S Cluster address and the Project you have been assigned.</strong> If not use the 'Copy' button on the text below to get the Cluster address and add it to the Cluster textbox above (pressing <strong>RETURN</strong> after pasting it). Then add the Project name if it is not already there, again pressing <strong>RETURN</strong> after entering it into the field.</p>
-</div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apps.ocp1.azure.dso.digital.mod.uk</code></pre>
-</div>
+<p><strong>Ensure the two textboxes at the top of this HTML Guide to the Module contain the Cluster address and the Project you will be using.</strong></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -314,7 +304,7 @@ you are creating</strong></p>
 <p>The second is the <strong>Developer</strong> viewpoint, which we will use extensively during this Module.</p>
 </div>
 <div class="paragraph">
-<p>If you haven&#8217;t already logged on, log on to the D2S cluster at:</p>
+<p>If you haven&#8217;t already logged on, log on to the cluster you will be using at:</p>
 </div>
 <div class="paragraph">
 <p><a href="https://console-openshift-console.%CLUSTER_SUBDOMAIN%" class="bare params-link" target="_blank" rel="noopener">https://console-openshift-console.%CLUSTER_SUBDOMAIN%</a></p>
@@ -470,7 +460,7 @@ It makes it easy to determine and interact with them.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>You now have an Application active on D2S. Click on the Roundel itself and the topology page should look very similar to this:</p>
+<p>You now have an Application active on OpenShift. Click on the Roundel itself and the topology page should look very similar to this:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -544,7 +534,7 @@ can consist of multiple Containers being executed as the same Pod.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You can interact directly with OpenShift using the 'oc' command line tool as well. Normally this requires you to install this locally; instructions would have been provided by the D2S team.<br>
+<p>You can interact directly with OpenShift using the 'oc' command line tool as well. The CLI can be installed by clicking on the (?) at the top of the Ux and selecting 'Command Line Tools'.<br>
 Put simply the 'oc' command gives you create, read, update and delete access to all the Objects you own in the Projects you can access. You can do anything using 'oc' that you can do using the UI, the UI is an opinionated, easy to use wrapper around the same OpenShift RESTful calls that are done through the command line.</p>
 </div>
 </td>

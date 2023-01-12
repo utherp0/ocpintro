@@ -1,20 +1,18 @@
-= D2S OpenShift Introduction
-
-image::d2s.png[D2S Logo,width=190px,float="right",align="center"]
+= OpenShift Developer's Introduction
 
 :!sectids:
 
 image::000-image001.png[Screenshot,width=500px]
 
-== *A Developer's Introduction to D2S/OpenShift*
+== *A Developer's Introduction to OpenShift*
 
-*Welcome to the D2S Developer's Introduction training material.* The goal of this online introduction is to get a Developer up to speed on the functionality and nuances of developing applications using the D2S platform.
+*Welcome to the OpenShift Developer's Introduction training material.* The goal of this online introduction is to get a Developer up to speed on the functionality and nuances of developing applications using the OpenShift platform.
 
 The course is divided into a set of small, easy to consume, self-paced modules that cover varied aspects of the platform. It is aimed at people who have minimal experience, if any, of Kubernetes and Container platforms.
 
 Each Module contains a number of exercises to try, along with detailed explanations of what is being done. 
 
-All that is needed to run the examples is a logon to the D2S system and a pre-created Project from the D2S team.
+In order to use the examples you must have a valid login to an OpenShift (4.11+) system and a Project in which to work
 
 The modules are self-paced. Within the description of the Modules there will be Tips and Notes; tips give hints as to what is being done, Notes go into more details about the exercises within the Module.
 
@@ -29,12 +27,7 @@ They will relate to the flow of the Module
 Notes will contain in-depth information around the concepts; they are added for interest and detailed knowledge
 ====
 
-To personalise the Modules add the cluster address (given below with a 'copy' button) and the Project you are using into the text entry boxes at the top of the interface. These are propagated through the
+To personalise the Modules add the cluster address and the Project you are using into the text entry boxes at the top of the interface. These are propagated through the
 examples so you only need to add them once.
 
-[.console-input]
-[source,bash]
-----
-apps.ocp1.azure.dso.digital.mod.uk
-----
 

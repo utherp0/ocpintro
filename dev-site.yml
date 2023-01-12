@@ -4,7 +4,7 @@ runtime:
 site:
   title: Developer Introduction to OpenShift
   #url: http://localhost:3000/rhs-openshift-starter-guides/index.html
-  start_page: d2sdevex::index.adoc
+  start_page: ocpintro::index.adoc
 
 content:
   sources:
@@ -30,4 +30,4 @@ ui:
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:
-  dir: ./d2sdevex
+  dir: ./ocpintro
