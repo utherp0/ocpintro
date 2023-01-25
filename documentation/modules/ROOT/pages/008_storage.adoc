@@ -130,6 +130,12 @@ image::008-image004.png[Active PVC,width=500px]
 At this point we have a *PVC* owned by the projects. To confirm this click on the *PersistentVolumeClaims* link on the lefthand navigation panel. There should be a single PVC
 called *examplestorage* with a status of *Bound* and a capacity of *1 GB*.
 
+[CAUTION]
+====
+With some storage systems the PVC may remain as 'Pending' until it is used. This is not an issue; attaching the PVC to the Application, as you
+will now do, will instantiate and bind the storage
+====
+
 This piece of storage is now bound to the _project_ but not bound to the _application_. To do that we need to add the Storage to the *DeploymentConfig*, telling OpenShift how to 
 attach the file system into the Application itself.
 
