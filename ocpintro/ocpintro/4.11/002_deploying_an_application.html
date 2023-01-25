@@ -395,11 +395,26 @@ when pulling an Application from an external registry it will be pulled into the
 <p>Feel free to choose a Runtime Icon for the application from the pulldown; this will be displayed on the topology when the Application is created. It defaults to an OpenShift logo.</p>
 </div>
 <div class="paragraph">
-<p>In the <strong>General</strong> part of the form there are two pulldown boxes; Application and Name. This is slightly confusing at first; OpenShift has the concept, on the UI, of an Application, which is short for
+<p>In the <strong>General</strong> part of the form there are two textboxes; Application and Name. This is slightly confusing at first; OpenShift has the concept, on the UI, of an Application, which is short for
 Application Grouping. This is a cosmetic grouping of individual Applications, allowing you to perform high-level tasks on them.</p>
 </div>
 <div class="paragraph">
-<p>Select the <strong>Create application</strong> option of the pulldown and enter <strong>devex-app</strong> as the name of the new Application grouping.</p>
+<p>Enter <strong>devex-app</strong> as the name of the new Application grouping.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you are using an existing Project and there are already other components in it there will be a pulldown rather than a textbox for the <strong>Application name</strong>. In this case
+click on the pulldown and select 'Create application', and add <strong>devex-app</strong></p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The <strong>Name</strong> field is more important. This defines the name/label that is applied to all the Objects needed to manifest your Application. Set this to <strong>devex</strong></p>

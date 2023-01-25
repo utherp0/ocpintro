@@ -113,7 +113,8 @@ https://github.com/utherp0/bootcampapp
 
 Once you have entered this data, or in the case of another Builder Image, the interface should indicate the URL is Validated.
 
-Scroll down to the *General* components. Change the *Application* field (pull down and select 'Create Application') and enter 'quarkus-app' as the name (or if you are using another Builder Image, choose something
+Scroll down to the *General* components. Change the *Application* textfield (pull down and select 'Create Application' if this textbox is a pulldown - if you have already got an Application in the 
+project you will be offered a pulldown rather than a textbox; in this case choose *Create application*) and enter 'quarkus-app' as the name (or if you are using another Builder Image, choose something
 like myexample-app).
 
 The *Name* field will have been pre-populated with the name of the Git repo used. In the case of the OpenJDK one change the name to 'quarkus'.

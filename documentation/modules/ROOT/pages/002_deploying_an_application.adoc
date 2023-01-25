@@ -90,10 +90,16 @@ Once you have entered the field contents you should get a message saying *Valida
 
 Feel free to choose a Runtime Icon for the application from the pulldown; this will be displayed on the topology when the Application is created. It defaults to an OpenShift logo.
 
-In the *General* part of the form there are two pulldown boxes; Application and Name. This is slightly confusing at first; OpenShift has the concept, on the UI, of an Application, which is short for
+In the *General* part of the form there are two textboxes; Application and Name. This is slightly confusing at first; OpenShift has the concept, on the UI, of an Application, which is short for
 Application Grouping. This is a cosmetic grouping of individual Applications, allowing you to perform high-level tasks on them. 
 
-Select the *Create application* option of the pulldown and enter *devex-app* as the name of the new Application grouping.
+Enter *devex-app* as the name of the new Application grouping.
+
+[CAUTION]
+====
+If you are using an existing Project and there are already other components in it there will be a pulldown rather than a textbox for the *Application name*. In this case
+click on the pulldown and select 'Create application', and add *devex-app*
+====
 
 The *Name* field is more important. This defines the name/label that is applied to all the Objects needed to manifest your Application. Set this to *devex*
 
