@@ -440,6 +440,21 @@ the administrators for cookie-cutting various storage types.</p>
 <p>At this point we have a <strong>PVC</strong> owned by the projects. To confirm this click on the <strong>PersistentVolumeClaims</strong> link on the lefthand navigation panel. There should be a single PVC
 called <strong>examplestorage</strong> with a status of <strong>Bound</strong> and a capacity of <strong>1 GB</strong>.</p>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>With some storage systems the PVC may remain as 'Pending' until it is used. This is not an issue; attaching the PVC to the Application, as you
+will now do, will instantiate and bind the storage</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>This piece of storage is now bound to the <em>project</em> but not bound to the <em>application</em>. To do that we need to add the Storage to the <strong>DeploymentConfig</strong>, telling OpenShift how to
 attach the file system into the Application itself.</p>

@@ -121,7 +121,7 @@ Delete the contents of the YAML editor and replace it with this:
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask1
@@ -156,7 +156,7 @@ Again, as we said, this is a template for executing the task so we haven't execu
 
 To test the task we will create a simple pipeline using the UI. *Pipelines* is already an element in the lefthand menu, so click on *Pipelines*.
 
-Click on *Create Pipeline*. This will take you to the *Pipeline builder* page. Note that you can either create a pipeline using the graphical tools or, as with any object 
+Click on *Create* and choose *Pipeline*. This will take you to the *Pipeline builder* page. Note that you can either create a pipeline using the graphical tools or, as with any object 
 in OpenShift, simply give it the YAML. In this case we will use the graphical interface to quickly create a single task pipeline using the task we just created.
 
 Change the *Name* to *example-pipeline1*.
@@ -180,7 +180,7 @@ For this part of the exercise we are going to create two additional tasks. Click
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask2
@@ -203,7 +203,7 @@ spec:
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask3
@@ -223,7 +223,7 @@ spec:
         - "In task 3"
 ----
 
-We will now create a Pipeline, but instead of using the *builder* we will do it via YAML. Click on *Pipelines* on the lefthand panel, then *Create Pipeline*. Switch to *YAML* view and replace the text in the *YAML* editor with:
+We will now create a Pipeline, but instead of using the *builder* we will do it via YAML. Click on *Pipelines* on the lefthand panel, then *Create* and  *Pipeline*. Switch to *YAML* view and replace the text in the *YAML* editor with:
 
 [.console-input]
 [source,bash]
@@ -279,12 +279,12 @@ If we were just using Tasks the second task would fail; when the first task comp
 This isn't the case when you use *steps* that are the same Image; for efficiency a Task will reuse the file system of an Image across steps.
 ====
 
-For this example we will create three new tasks. Using the *Tasks* menu item on the lefthand panel, *Create Task*, replace the YAML and create each of the following:
+For this example we will create three new tasks. Using the *Tasks* menu item on the lefthand panel, *Create* then  *Task*, replace the YAML and create each of the following:
 
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifilecreate
@@ -321,7 +321,7 @@ Note the addition of a *workspaces* component. This maps an externally defined p
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifilecheck
@@ -352,7 +352,7 @@ spec:
 [.console-input]
 [source,bash]
 ----
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifileremove
@@ -380,7 +380,7 @@ spec:
       mountPath: /ocpintro
 ----
 
-Now we have three new tasks we can create a Pipeline to use them. Click on *Pipelines* on the lefthand panel. Click on *Create Pipeline*. Switch to *YAML view* if it isn't already on there. Replace the code with the following:
+Now we have three new tasks we can create a Pipeline to use them. Click on *Pipelines* on the lefthand panel. Click on *Create* and then *Pipeline*. Switch to *YAML view* if it isn't already on there. Replace the code with the following:
 
 [.console-input]
 [source,bash]

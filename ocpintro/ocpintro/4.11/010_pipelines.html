@@ -449,7 +449,7 @@ a number of parameters you have to provide, such as the Git repo for the <strong
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask1
@@ -498,7 +498,7 @@ latest RHEL8 UBI.</p>
 <p>To test the task we will create a simple pipeline using the UI. <strong>Pipelines</strong> is already an element in the lefthand menu, so click on <strong>Pipelines</strong>.</p>
 </div>
 <div class="paragraph">
-<p>Click on <strong>Create Pipeline</strong>. This will take you to the <strong>Pipeline builder</strong> page. Note that you can either create a pipeline using the graphical tools or, as with any object
+<p>Click on <strong>Create</strong> and choose <strong>Pipeline</strong>. This will take you to the <strong>Pipeline builder</strong> page. Note that you can either create a pipeline using the graphical tools or, as with any object
 in OpenShift, simply give it the YAML. In this case we will use the graphical interface to quickly create a single task pipeline using the task we just created.</p>
 </div>
 <div class="paragraph">
@@ -533,7 +533,7 @@ click directly on the Pipeline icon it will display a list of Tasks (in this cas
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask2
@@ -555,7 +555,7 @@ spec:
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ctask3
@@ -576,7 +576,7 @@ spec:
 </div>
 </div>
 <div class="paragraph">
-<p>We will now create a Pipeline, but instead of using the <strong>builder</strong> we will do it via YAML. Click on <strong>Pipelines</strong> on the lefthand panel, then <strong>Create Pipeline</strong>. Switch to <strong>YAML</strong> view and replace the text in the <strong>YAML</strong> editor with:</p>
+<p>We will now create a Pipeline, but instead of using the <strong>builder</strong> we will do it via YAML. Click on <strong>Pipelines</strong> on the lefthand panel, then <strong>Create</strong> and  <strong>Pipeline</strong>. Switch to <strong>YAML</strong> view and replace the text in the <strong>YAML</strong> editor with:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -660,11 +660,11 @@ approach to Pipeline technology.</p>
 </table>
 </div>
 <div class="paragraph">
-<p>For this example we will create three new tasks. Using the <strong>Tasks</strong> menu item on the lefthand panel, <strong>Create Task</strong>, replace the YAML and create each of the following:</p>
+<p>For this example we will create three new tasks. Using the <strong>Tasks</strong> menu item on the lefthand panel, <strong>Create</strong> then  <strong>Task</strong>, replace the YAML and create each of the following:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifilecreate
@@ -709,7 +709,7 @@ spec:
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifilecheck
@@ -739,7 +739,7 @@ spec:
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1alpha1
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ubifileremove
@@ -768,7 +768,7 @@ spec:
 </div>
 </div>
 <div class="paragraph">
-<p>Now we have three new tasks we can create a Pipeline to use them. Click on <strong>Pipelines</strong> on the lefthand panel. Click on <strong>Create Pipeline</strong>. Switch to <strong>YAML view</strong> if it isn&#8217;t already on there. Replace the code with the following:</p>
+<p>Now we have three new tasks we can create a Pipeline to use them. Click on <strong>Pipelines</strong> on the lefthand panel. Click on <strong>Create</strong> and then <strong>Pipeline</strong>. Switch to <strong>YAML view</strong> if it isn&#8217;t already on there. Replace the code with the following:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
